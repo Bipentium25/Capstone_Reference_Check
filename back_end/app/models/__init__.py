@@ -1,6 +1,6 @@
 from .article import Article
-from .user import User
-from .reference import Reference
+from .author import Author
+from .author_article import AuthorArticle
 
-__all__ = ["Article", "User", "Reference"]
+__all__ = ["Article", "Author", "AuthorArticle"]
 print("models loaded")
