@@ -1,0 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  min-height: calc(100vh - 100px); /* Adjust based on your header height */
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
