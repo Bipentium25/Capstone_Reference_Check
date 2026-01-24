@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, ForeignKey, String, TIMESTAMP, text
+from sqlalchemy import Column, Integer, ForeignKey, String, text,  Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
 
@@ -9,7 +9,9 @@ class Article(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)
-    published = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
+    published_journal = Column(String, nullable=True)
+    published_date = Column(Date, server_default=text('CURRENT_DATE'))
+    author_names = Column(String, nullable=False)
     corresponding_author_id = Column(Integer, ForeignKey("authors.id"), nullable=False)
 
     ####### relationships 

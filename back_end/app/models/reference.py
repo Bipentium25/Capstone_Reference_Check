@@ -10,12 +10,11 @@ class Reference(Base):
     content = Column(String, nullable=False)
 
     # 🔑 foreign keys (DATABASE LEVEL)
-    cited_from_id = Column(Integer, ForeignKey("articles.id"), nullable=False)
-    cited_to_id = Column(Integer, ForeignKey("articles.id"), nullable=False)
 
+    cited_to_id = Column(Integer, ForeignKey("articles.id"), nullable=False) # the article having citation
+    cited_from_id = Column(Integer, ForeignKey("articles.id"), nullable=False) # the article cited from 
     if_key_reference = Column(Boolean, nullable=False)
     if_secondary_reference = Column(Boolean, nullable=False)
-
     citation_content = Column(String, nullable=True)
     ai_rated_score = Column(Integer, nullable=True)
     feedback = Column(String, nullable=False)
