@@ -1,14 +1,23 @@
+"use client";
 import Link from 'next/link'
 
-export default function Sidebar() {
+
+type UserLinkButtonProps = {
+    userId: string;
+};
+
+
+export default function Sidebar({ userId }: UserLinkButtonProps) {
     return (
     <aside className="w-64 border-r-2 border-black p-4">
-        <button className="w-full border-2 border-black rounded px-4 py-2 mb-4">
-        User log in
-        </button>
+        <Link href="/user/login">
+            <button>User Login</button>
+        </Link>
         
-        <div className="mb-4 text-sm">
-        <Link href="/User">user info</Link>
+        <div className="w-64 border-r-2 border-black p-4">
+        <Link href={`/user/${userId}`}>
+            <button>Go to UserInfo</button>
+        </Link>
         <div className="ml-2">
             <div>(my articles</div>
             <div>my reference validation)</div>
