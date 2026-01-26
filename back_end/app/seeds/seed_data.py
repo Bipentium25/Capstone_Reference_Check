@@ -17,6 +17,8 @@ def seed():
     authors = [alice, bob, carol, david, eve]
     db.add_all(authors)
     db.commit()
+    for author in authors:
+        db.refresh(author)
 
     # --- Articles ---
     article1 = Article(
@@ -46,23 +48,21 @@ def seed():
         author_names="Carol Lee, David Wong, Eve Chen"
     )
 
-    db.add_all([article1, article2, article3])
+    articles = [article1, article2, article3]
+    db.add_all(articles)
     db.commit()
-    db.refresh(article1)
-    db.refresh(article2)
-    db.refresh(article3)
+    for article in articles:
+        db.refresh(article)
 
     # --- AuthorArticle links ---
     links = [
-        AuthorArticle(article=article1, author=alice),
-        AuthorArticle(article=article1, author=bob),
-
-        AuthorArticle(article=article2, author=bob),
-        AuthorArticle(article=article2, author=carol),
-
-        AuthorArticle(article=article3, author=carol),
-        AuthorArticle(article=article3, author=david),
-        AuthorArticle(article=article3, author=eve),
+        AuthorArticle(article_id=article1.id, author_id=alice.id),
+        AuthorArticle(article_id=article1.id, author_id=bob.id),
+        AuthorArticle(article_id=article2.id, author_id=bob.id),
+        AuthorArticle(article_id=article2.id, author_id=carol.id),
+        AuthorArticle(article_id=article3.id, author_id=carol.id),
+        AuthorArticle(article_id=article3.id, author_id=david.id),
+        AuthorArticle(article_id=article3.id, author_id=eve.id),
     ]
 
     db.add_all(links)
