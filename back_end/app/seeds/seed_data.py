@@ -1,86 +1,106 @@
+# app/seeds/seed_data.py
 from datetime import date
-from ..database import SessionLocal
-from ..models import Author, Article, Reference
+from app.database import SessionLocal
+from app.models import Author, Article, AuthorArticle, Reference
 
 def seed():
     db = SessionLocal()
+    print("🔹 Seeding database...")
 
-    try:
-        # ---------- AUTHORS ----------
-        alice = Author(
-            name="Alice Zhang",
-            email="alice.zhang@example.com",
-            institute="MIT",
-            job="Research Scientist"
-        )
+    # --- Authors ---
+    alice = Author(name="Alice Zhang", email="alice.zhang@example.com", institute="MIT", job="Research Scientist")
+    bob = Author(name="Bob Smith", email="bob.smith@example.com", institute="Stanford", job="Professor")
+    carol = Author(name="Carol Lee", email="carol.lee@example.com", institute="Harvard", job="Postdoc")
+    david = Author(name="David Wong", email="david.wong@example.com", institute="EDAM", job="Engineer")
+    eve = Author(name="Eve Chen", email="eve.chen@example.com", institute="MIT", job="Data Scientist")
 
-        bob = Author(
-            name="Bob Smith",
-            email="bob.smith@example.com",
-            institute="Stanford",
-            job="Professor"
-        )
+    authors = [alice, bob, carol, david, eve]
+    db.add_all(authors)
+    db.commit()
 
-        db.add_all([alice, bob])
-        db.commit()
+    # --- Articles ---
+    article1 = Article(
+        title="Quantum Computing Advances",
+        content="Exploring new qubit architectures and error correction techniques.",
+        published_journal="Journal of Quantum Tech",
+        published_date=date(2024, 5, 20),
+        corresponding_author=alice,
+        author_names="Alice Zhang, Bob Smith"
+    )
 
-        # refresh to get IDs
-        db.refresh(alice)
-        db.refresh(bob)
+    article2 = Article(
+        title="Machine Learning in Energy Systems",
+        content="Applying ML to predict energy consumption patterns.",
+        published_journal="Energy Journal",
+        published_date=date(2023, 11, 10),
+        corresponding_author=bob,
+        author_names="Bob Smith, Carol Lee"
+    )
 
-        # ---------- ARTICLES ----------
-        article1 = Article(
-            title="Deep Learning for Reference Checking",
-            content="This paper explores automated reference validation.",
-            published_journal="AI Research Journal",
-            published_date=date(2024, 6, 1),
-            corresponding_author_id=alice.id,
-            author_names="Alice Zhang, Bob Smith"
-        )
+    article3 = Article(
+        title="Data-Driven Optimization",
+        content="Optimization ideas inspired by AI and quantum computing.",
+        published_journal="Optimization Letters",
+        published_date=date(2024, 1, 15),
+        corresponding_author=carol,
+        author_names="Carol Lee, David Wong, Eve Chen"
+    )
 
-        article2 = Article(
-            title="Citation Graph Analysis",
-            content="Analyzing citation networks using graph theory.",
-            published_journal="Data Science Review",
-            published_date=date(2023, 11, 15),
-            corresponding_author_id=bob.id,
-            author_names="Bob Smith"
-        )
+    db.add_all([article1, article2, article3])
+    db.commit()
+    db.refresh(article1)
+    db.refresh(article2)
+    db.refresh(article3)
 
-        # link internal authors
-        article1.authors.extend([alice, bob])
-        article2.authors.append(bob)
+    # --- AuthorArticle links ---
+    links = [
+        AuthorArticle(article=article1, author=alice, author_order=1),
+        AuthorArticle(article=article1, author=bob, author_order=2),
 
-        db.add_all([article1, article2])
-        db.commit()
+        AuthorArticle(article=article2, author=bob, author_order=1),
+        AuthorArticle(article=article2, author=carol, author_order=2),
 
-        db.refresh(article1)
-        db.refresh(article2)
+        AuthorArticle(article=article3, author=carol, author_order=1),
+        AuthorArticle(article=article3, author=david, author_order=2),
+        AuthorArticle(article=article3, author=eve, author_order=3),
+    ]
 
-        # ---------- REFERENCES ----------
-        ref1 = Reference(
+    db.add_all(links)
+    db.commit()
+
+    # --- References ---
+    references = [
+        Reference(
             cited_from_id=article1.id,
             cited_to_id=article2.id,
             if_key_reference=True,
             if_secondary_reference=False,
-            citation_content="Smith et al. (2023) introduced citation graphs.",
-            ai_rated_score=85,
-            feedback="Strong foundational reference",
-            author_comment="Highly relevant background work"
+            citation_content="Inspired by energy system predictions.",
+            content="Reference: quantum computing principles applied to ML.",
+        ),
+        Reference(
+            cited_from_id=article2.id,
+            cited_to_id=article3.id,
+            if_key_reference=False,
+            if_secondary_reference=True,
+            citation_content="Optimization techniques inspired by ML.",
+            content="Reference: data-driven optimization methodology.",
+        ),
+        Reference(
+            cited_from_id=article3.id,
+            cited_to_id=article1.id,
+            if_key_reference=True,
+            if_secondary_reference=True,
+            citation_content="Applying quantum techniques.",
+            content="Reference: feedback loop from prior quantum research.",
         )
+    ]
 
-        db.add(ref1)
-        db.commit()
+    db.add_all(references)
+    db.commit()
 
-        print("✅ Database seeded successfully")
+    print("✅ Database seeded successfully!")
 
-    except Exception as e:
-        db.rollback()
-        print("❌ Seeding failed:", e)
-
-    finally:
-        db.close()
-
-
+# for direct execution
 if __name__ == "__main__":
     seed()
