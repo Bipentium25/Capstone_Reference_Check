@@ -11,6 +11,13 @@ router = APIRouter(
 )
 
 # -------------------- Pydantic models --------------------
+class AuthorEmailIn(BaseModel):
+    email: EmailStr
+
+class ArticleSummary(BaseModel):
+    id: int
+    title: str
+
 class AuthorIn(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -23,9 +30,12 @@ class AuthorOut(BaseModel):
     email: Optional[EmailStr]
     institute: Optional[str]
     job: Optional[str]
+    articles: List[ArticleSummary] = []
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
+
 
 # -------------------- Routes --------------------
 @router.post("/", response_model=AuthorOut)
@@ -46,6 +56,24 @@ def get_author(id: int, db: Session = Depends(get_db)):
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
     return author
+
+@router.post("/by-email", response_model=AuthorOut)
+def get_author_by_email(author_email: AuthorEmailIn, db: Session = Depends(get_db)):
+    author = db.query(Author).filter(Author.email == author_email.email).first()
+    if not author:
+        raise HTTPException(status_code=404, detail="Author not found")
+
+    # build articles summary
+    articles = [{"id": a.id, "title": a.title} for a in author.articles]
+
+    return AuthorOut(
+        id=author.id,
+        name=author.name,
+        email=author.email,
+        institute=author.institute,
+        job=author.job,
+        articles=articles
+    )
 
 @router.delete("/{id}")
 def delete_author_by_id(id: int, db: Session = Depends(get_db)):

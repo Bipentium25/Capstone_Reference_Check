@@ -13,7 +13,7 @@ class Author(Base):
     job = Column(String, nullable=True)
 
     # link to AuthorArticle junction table
-    article_links = relationship("AuthorArticle", back_populates="author")
+    article_links = relationship("AuthorArticle",back_populates="author",cascade="all, delete-orphan")
 
     # convenience: directly get Article objects
     articles = association_proxy("article_links", "article")

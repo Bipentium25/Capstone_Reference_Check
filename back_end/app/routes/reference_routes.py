@@ -21,6 +21,7 @@ class ReferenceIn(BaseModel):
     feedback: Optional[str] = None
     author_comment: Optional[str] = None
 
+
 class ReferenceOut(BaseModel):
     id: int
     cited_to_id: int
@@ -32,8 +33,9 @@ class ReferenceOut(BaseModel):
     feedback: Optional[str] = None
     author_comment: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
 class ReferencePatch(BaseModel):
     if_key_reference: Optional[bool] = None

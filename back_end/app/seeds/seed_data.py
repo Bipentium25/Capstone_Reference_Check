@@ -54,15 +54,15 @@ def seed():
 
     # --- AuthorArticle links ---
     links = [
-        AuthorArticle(article=article1, author=alice, author_order=1),
-        AuthorArticle(article=article1, author=bob, author_order=2),
+        AuthorArticle(article=article1, author=alice),
+        AuthorArticle(article=article1, author=bob),
 
-        AuthorArticle(article=article2, author=bob, author_order=1),
-        AuthorArticle(article=article2, author=carol, author_order=2),
+        AuthorArticle(article=article2, author=bob),
+        AuthorArticle(article=article2, author=carol),
 
-        AuthorArticle(article=article3, author=carol, author_order=1),
-        AuthorArticle(article=article3, author=david, author_order=2),
-        AuthorArticle(article=article3, author=eve, author_order=3),
+        AuthorArticle(article=article3, author=carol),
+        AuthorArticle(article=article3, author=david),
+        AuthorArticle(article=article3, author=eve),
     ]
 
     db.add_all(links)

@@ -18,7 +18,7 @@ class Article(Base):
     corresponding_author = relationship("Author", foreign_keys=[corresponding_author_id])
 
     # many-to-many link
-    author_links = relationship("AuthorArticle", back_populates="article", order_by="AuthorArticle.author_order")
+    author_links = relationship("AuthorArticle",back_populates="article",cascade="all, delete-orphan")
 
     # convenience: directly get Author objects
     authors = association_proxy("author_links", "author")
