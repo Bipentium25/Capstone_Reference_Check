@@ -5,9 +5,9 @@ from app.database import Base
 class AuthorArticle(Base):
     __tablename__ = "author_article"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)  # <-- ADD THIS
-    author_id = Column(Integer, ForeignKey("authors.id"), nullable=False)
-    article_id = Column(Integer, ForeignKey("articles.id"), nullable=False)
+    # remove id
+    author_id = Column(Integer, ForeignKey("authors.id"), primary_key=True)
+    article_id = Column(Integer, ForeignKey("articles.id"), primary_key=True)
 
     author = relationship("Author", back_populates="article_links")
     article = relationship("Article", back_populates="author_links")
