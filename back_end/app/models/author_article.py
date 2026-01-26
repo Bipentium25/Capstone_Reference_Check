@@ -4,7 +4,7 @@ from app.database import Base
 
 class AuthorArticle(Base):
     __tablename__ = "author_article"
-
+    id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"), primary_key=True)
     article_id = Column(Integer, ForeignKey("articles.id", ondelete="CASCADE"), primary_key=True)
 
