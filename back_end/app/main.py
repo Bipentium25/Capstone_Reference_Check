@@ -9,8 +9,22 @@ from app.routes.article_routes import router as articles_router
 from app.routes.reference_routes import router as references_router
 from app.routes.client_routes import router as client_router
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://capstone-reference-check.onrender.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
