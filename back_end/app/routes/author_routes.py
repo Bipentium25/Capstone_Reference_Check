@@ -3,44 +3,28 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.author import Author
 from app.database import get_db
-from pydantic import BaseModel, EmailStr
+from app.security import hash_password
+
+from app.schema import AuthorIn, AuthorOut, AuthorEmailIn
 
 router = APIRouter(
     prefix="/authors",
     tags=["authors"]
 )
 
-# -------------------- Pydantic models --------------------
-class AuthorEmailIn(BaseModel):
-    email: EmailStr
-
-class ArticleSummary(BaseModel):
-    id: int
-    title: str
-
-class AuthorIn(BaseModel):
-    name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    institute: Optional[str] = None
-    job: Optional[str] = None
-
-class AuthorOut(BaseModel):
-    id: int
-    name: str
-    email: Optional[EmailStr]
-    institute: Optional[str]
-    job: Optional[str]
-    articles: List[ArticleSummary] = []
-
-    model_config = {
-        "from_attributes": True
-    }
-
-
 # -------------------- Routes --------------------
+
 @router.post("/", response_model=AuthorOut)
 def create_author(author_in: AuthorIn, db: Session = Depends(get_db)):
-    author = Author(**author_in.dict())
+    # Hash the password before storing
+    if not author_in.password:
+        raise HTTPException(status_code=400, detail="Password is required")
+
+    hashed_password = hash_password(author_in.password)
+
+    author_data = author_in.dict(exclude={"password"})  # remove plain password
+    author = Author(**author_data, password=hashed_password)
+
     db.add(author)
     db.commit()
     db.refresh(author)

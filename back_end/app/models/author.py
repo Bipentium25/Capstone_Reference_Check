@@ -11,7 +11,8 @@ class Author(Base):
     email = Column(String, nullable=False, unique=True)  # unique for object linking
     institute = Column(String, nullable=True)
     job = Column(String, nullable=True)
-
+    password = Column(String, nullable=False)  # store hashed password
+    
     # link to AuthorArticle junction table
     article_links = relationship("AuthorArticle",back_populates="author",cascade="all, delete-orphan")
 
