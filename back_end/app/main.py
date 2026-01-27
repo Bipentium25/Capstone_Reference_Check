@@ -7,6 +7,7 @@ from app.models.reference import Reference
 from app.routes.author_routes import router as authors_router
 from app.routes.article_routes import router as articles_router
 from app.routes.reference_routes import router as references_router
+from app.routes.client_routes import router as client_router
 
 app = FastAPI()
 
@@ -19,6 +20,7 @@ def root():
 app.include_router(authors_router)
 app.include_router(articles_router)
 app.include_router(references_router)
+app.include_router(client_router)
 
 
 @app.get("/debug", tags=["Debug"])
