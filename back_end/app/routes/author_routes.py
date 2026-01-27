@@ -13,22 +13,30 @@ router = APIRouter(
 )
 
 # -------------------- Routes --------------------
-
 @router.post("/", response_model=AuthorOut)
 def create_author(author_in: AuthorIn, db: Session = Depends(get_db)):
-    # Hash the password before storing
-    if not author_in.password:
-        raise HTTPException(status_code=400, detail="Password is required")
+    # Debug password before hashing
+    print("Raw password repr:", repr(author_in.password))
+    print("Length of password (chars):", len(author_in.password))
+    print("Length of password (bytes):", len(author_in.password.encode("utf-8")))
 
-    hashed_password = hash_password(author_in.password)
+    # Strip whitespace to avoid bcrypt issues
+    clean_password = author_in.password.strip()
 
-    author_data = author_in.dict(exclude={"password"})  # remove plain password
-    author = Author(**author_data, password=hashed_password)
+    hashed_password = hash_password(clean_password)
 
-    db.add(author)
+    db_author = Author(
+        name=author_in.name,
+        email=author_in.email,
+        password=hashed_password,
+        institute=author_in.institute,
+        job=author_in.job
+    )
+    db.add(db_author)
     db.commit()
-    db.refresh(author)
-    return author
+    db.refresh(db_author)
+    return db_author
+
 
 @router.get("/", response_model=List[AuthorOut])
 def get_authors(db: Session = Depends(get_db)):

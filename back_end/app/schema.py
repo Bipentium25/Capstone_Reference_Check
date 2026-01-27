@@ -84,6 +84,6 @@ class ReferenceOut(BaseModel):
     }
 
 # -------------------- login schema --------------------
-class LoginRequest(BaseModel):
+class AuthorLogin(BaseModel):
     email: EmailStr
     password: str
