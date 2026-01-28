@@ -1,55 +1,83 @@
-interface ArticleSummary {
-    id: number
-    title: string
-}
-interface User {
-    id: number
-    name: string
-    email?: string       // optional in case backend returns null
-    institute?: string
-    job?: string
-    articles?: ArticleSummary[]  // optional if sometimes empty or omitted
-}
+// components/sidebar/UserInfo.tsx
+"use client"
 
-interface UserInfoProps {
-    user: User | null
-    onLogin: (user: User | null) => void   // no more any
-}
+import { useState, FormEvent } from "react"
+import { useUserStore } from "@/app/store/userStore"
 
-export default function UserInfo({ user, onLogin }: UserInfoProps) {
-    const handleLogin = async (email: string, password: string) => {
-    const res = await fetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include"
-    })
-    if (res.ok) {
-      const data: User = await res.json()  // make sure backend returns {id, name, email}
-        onLogin(data)
-    } else {
-        alert("Login failed")
-    }
-    }
+    export default function UserInfo() {
+    const { user, setUser, logout } = useUserStore()
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
 
-    if (!user) {
-    return (
-        <form onSubmit={(e) => {
+    async function handleLogin(e: FormEvent) {
         e.preventDefault()
-        handleLogin(e.currentTarget.email.value, e.currentTarget.password.value)
-        }}>
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <button type="submit">Login</button>
+        setError("")
+
+        try {
+        const res = await fetch(
+            "https://capstone-reference-check.onrender.com/client/login",
+            {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            }
+        )
+
+        if (!res.ok) {
+            const data = await res.json()
+            throw new Error(data.detail || "Login failed")
+        }
+
+        const userData = await res.json()
+        setUser(userData) // 👈 Update Zustand store
+        } catch (err: unknown) {
+        if (err instanceof Error) {
+            setError(err.message)
+        } else {
+            setError("An unexpected error occurred")
+        }
+        }
+    }
+
+    if (user) {
+        // logged in view
+        return (
+        <div>
+            <p>Welcome, {user.name}</p>
+            <p>Email: {user.email}</p>
+            <p>Institute: {user.institute}</p>
+            <p>Job: {user.job}</p>
+            <button onClick={logout}>Log out</button> {/* 👈 Use logout */}
+            <h4>Your Articles:</h4>
+            <ul>
+            {user.articles?.map((a) => (
+                <li key={a.id}>{a.title}</li>
+            ))}
+            </ul>
+        </div>
+        )
+    }
+
+    // login form view
+    return (
+        <form onSubmit={handleLogin}>
+        <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+        />
+        <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+        />
+        <button type="submit">Log in</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
         </form>
     )
     }
-
-    return (
-    <div>
-        <p>Welcome, {user.name}</p>
-        <p>{user.email}</p>
-        <button>My Articles</button>
-    </div>
-    )
-}
