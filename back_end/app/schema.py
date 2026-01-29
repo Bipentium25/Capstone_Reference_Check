@@ -71,11 +71,12 @@ class ReferenceIn(BaseModel):
     feedback: Optional[str] = None
     author_comment: Optional[str] = None
 
-
 class ReferenceOut(BaseModel):
     id: int
     cited_to_id: int
     cited_from_id: int
+    cited_to_title: Optional[str] = None     # new
+    cited_from_title: Optional[str] = None   # new
     if_key_reference: bool
     if_secondary_reference: bool
     citation_content: Optional[str] = None
@@ -86,6 +87,13 @@ class ReferenceOut(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class ReferencePatch(BaseModel):
+    if_key_reference: Optional[bool] = None
+    if_secondary_reference: Optional[bool] = None
+    ai_rated_score: Optional[int] = None
+    feedback: Optional[str] = None
+    author_comment: Optional[str] = None
 
 # -------------------- login schema --------------------
 class AuthorLogin(BaseModel):

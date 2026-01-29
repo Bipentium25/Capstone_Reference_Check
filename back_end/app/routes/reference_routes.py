@@ -3,73 +3,76 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.reference import Reference
 from app.database import get_db
-from pydantic import BaseModel
+from app.schema import ReferenceIn, ReferenceOut, ReferencePatch
 
 router = APIRouter(
     prefix="/references",
     tags=["references"]
 )
 
-# -------------------- Pydantic models --------------------
-class ReferenceIn(BaseModel):
-    cited_to_id: int
-    cited_from_id: int
-    if_key_reference: bool
-    if_secondary_reference: bool
-    citation_content: Optional[str] = None
-    ai_rated_score: Optional[int] = None
-    feedback: Optional[str] = None
-    author_comment: Optional[str] = None
-
-
-class ReferenceOut(BaseModel):
-    id: int
-    cited_to_id: int
-    cited_from_id: int
-    if_key_reference: bool
-    if_secondary_reference: bool
-    citation_content: Optional[str] = None
-    ai_rated_score: Optional[int] = None
-    feedback: Optional[str] = None
-    author_comment: Optional[str] = None
-
-    model_config = {
-        "from_attributes": True
-    }
-
-class ReferencePatch(BaseModel):
-    if_key_reference: Optional[bool] = None
-    if_secondary_reference: Optional[bool] = None
-    ai_rated_score: Optional[int] = None
-    feedback: Optional[str] = None
-    author_comment: Optional[str] = None
+# -------------------- Helper --------------------
+def serialize_reference(ref: Reference) -> ReferenceOut:
+    """
+    Serialize a Reference object to ReferenceOut, including
+    cited article titles for frontend display.
+    """
+    return ReferenceOut(
+        id=ref.id,
+        cited_to_id=ref.cited_to_id,
+        cited_from_id=ref.cited_from_id,
+        cited_to_title=ref.cited_to.title if ref.cited_to else None,
+        cited_from_title=ref.cited_from.title if ref.cited_from else None,
+        if_key_reference=ref.if_key_reference,
+        if_secondary_reference=ref.if_secondary_reference,
+        citation_content=ref.citation_content,
+        ai_rated_score=ref.ai_rated_score,
+        feedback=ref.feedback,
+        author_comment=ref.author_comment
+    )
 
 # -------------------- Routes --------------------
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
+    """
+    Create a new reference.
+    """
     reference = Reference(**ref_in.dict())
     db.add(reference)
     db.commit()
     db.refresh(reference)
-    return reference
+    return serialize_reference(reference)
 
 @router.get("/{id}", response_model=ReferenceOut)
 def get_reference(id: int, db: Session = Depends(get_db)):
+    """
+    Get a single reference by ID.
+    """
     reference = db.get(Reference, id)
     if not reference:
         raise HTTPException(status_code=404, detail="Reference not found")
-    return reference
+    return serialize_reference(reference)
 
 @router.get("/from/{article_id}", response_model=List[ReferenceOut])
 def get_references_from_article(article_id: int, db: Session = Depends(get_db)):
-    return db.query(Reference).filter(Reference.cited_from_id == article_id).all()
+    """
+    Get all references **from** a given article.
+    """
+    refs = db.query(Reference).filter(Reference.cited_from_id == article_id).all()
+    return [serialize_reference(r) for r in refs]
 
 @router.get("/to/{article_id}", response_model=List[ReferenceOut])
 def get_references_to_article(article_id: int, db: Session = Depends(get_db)):
-    return db.query(Reference).filter(Reference.cited_to_id == article_id).all()
+    """
+    Get all references **to** a given article.
+    """
+    refs = db.query(Reference).filter(Reference.cited_to_id == article_id).all()
+    return [serialize_reference(r) for r in refs]
 
 @router.patch("/{id}", response_model=ReferenceOut)
 def patch_reference(id: int, ref_in: ReferencePatch, db: Session = Depends(get_db)):
+    """
+    Partially update a reference by ID.
+    """
     reference = db.get(Reference, id)
     if not reference:
         raise HTTPException(status_code=404, detail="Reference not found")
@@ -80,4 +83,4 @@ def patch_reference(id: int, ref_in: ReferencePatch, db: Session = Depends(get_d
     
     db.commit()
     db.refresh(reference)
-    return reference
+    return serialize_reference(reference)
