@@ -1,46 +1,83 @@
+/* components/ReferenceList.module.css */
+
+/* Main container */
+.container {
+  max-width: 56rem; /* Same as article page wrapper */
+  margin: 2rem auto 0;
+  padding: 0 1.5rem;
+}
+
+/* Card wrapper */
+.card {
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+/* Table styles */
 .table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
+/* Table header */
 .th {
-  background-color: #f9fafb; /* gray-50 */
+  padding: 0.75rem 1rem;
+  text-align: left;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #374151; /* gray-700 */
-  padding: 0.75rem 1rem;
-  border-bottom: 2px solid #e5e7eb; /* gray-200 */
+  color: #374151;
+  background-color: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-.td {
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: #111827; /* gray-900 */
-  vertical-align: top;
+/* Table row */
+.row {
   border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.15s ease;
 }
 
 .row:hover {
   background-color: #f9fafb;
 }
 
-.muted {
-  color: #6b7280; /* gray-500 */
+.row:last-child {
+  border-bottom: none;
 }
 
+/* Table cell */
+.td {
+  padding: 1rem;
+  vertical-align: top;
+  font-size: 0.875rem;
+  color: #1f2937;
+  max-width: 250px; /* Prevent cells from getting too wide */
+}
+
+/* Muted text for context/feedback/comment */
+.muted {
+  color: #6b7280;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* Badge styles */
 .badge {
   display: inline-flex;
   align-items: center;
+  padding: 0.25rem 0.5rem;
   border-radius: 9999px;
-  padding: 0.125rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .key {
   background-color: #dbeafe;
-  color: #1d4ed8;
+  color: #1e40af;
 }
 
 .secondary {
@@ -48,11 +85,31 @@
   color: #92400e;
 }
 
+/* Score badge */
 .score {
   display: inline-flex;
-  justify-content: center;
   align-items: center;
-  min-width: 3rem;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-weight: 700;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .th,
+  .td {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .td {
+    max-width: 150px;
+  }
 }

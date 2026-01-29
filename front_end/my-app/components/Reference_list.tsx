@@ -1,3 +1,4 @@
+// components/ReferenceList.tsx
 "use client"
 
 import { useEffect, useState } from "react"
@@ -22,7 +23,7 @@ interface Reference {
     articleId: number
     }
 
-export default function ReferenceList({ articleId }: ReferenceListProps) {
+    export default function ReferenceList({ articleId }: ReferenceListProps) {
     const [references, setReferences] = useState<Reference[]>([])
     const [filteredReferences, setFilteredReferences] = useState<Reference[]>([])
     const [showOnlyKey, setShowOnlyKey] = useState(false)
@@ -60,9 +61,7 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
     /* ---------------- Filter logic ---------------- */
     useEffect(() => {
         if (showOnlyKey) {
-        setFilteredReferences(
-            references.filter((ref) => ref.if_key_reference)
-        )
+        setFilteredReferences(references.filter((ref) => ref.if_key_reference))
         } else {
         setFilteredReferences(references)
         }
@@ -78,7 +77,7 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
     /* ---------------- States ---------------- */
     if (isLoading) {
         return (
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className={styles.card}>
             <h2 className="text-xl font-semibold">References</h2>
             <p className="mt-2 text-gray-500">Loading references…</p>
         </div>
@@ -87,7 +86,7 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
 
     if (error) {
         return (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+        <div className={styles.card} style={{ borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}>
             <h2 className="text-xl font-semibold text-red-900">References</h2>
             <p className="mt-2 text-red-700">{error}</p>
         </div>
@@ -96,40 +95,38 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
 
     if (references.length === 0) {
         return (
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className={styles.card}>
             <h2 className="text-xl font-semibold">References</h2>
-            <p className="mt-2 text-gray-500">
-            No references found for this article.
-            </p>
+            <p className="mt-2 text-gray-500">No references found for this article.</p>
         </div>
         )
     }
 
     /* ---------------- Render ---------------- */
     return (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className={styles.card}>
         {/* Header */}
         <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
             <div>
-            <h2 className="text-2xl font-semibold text-gray-900">
-                References
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-900">References</h2>
             <p className="mt-1 text-sm text-gray-500">
-                {filteredReferences.length}{" "}
-                {showOnlyKey ? "key" : "total"} reference
+                {filteredReferences.length} {showOnlyKey ? "key" : "total"} reference
                 {filteredReferences.length !== 1 ? "s" : ""}
             </p>
             </div>
 
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-            <input
-                type="checkbox"
-                checked={showOnlyKey}
-                onChange={(e) => setShowOnlyKey(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600"
-            />
+        <label className="flex cursor-pointer items-center gap-2">
+        <input
+            type="checkbox"
+            checked={showOnlyKey}
+            onChange={(e) => setShowOnlyKey(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600"
+        />
+        <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 'normal' }}>
             Show only key references
-            </label>
+        </span>
+        </label>
+
         </div>
 
         {/* Table */}
@@ -141,7 +138,7 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
                 <th className={styles.th}>Article</th>
                 <th className={styles.th}>Citation Context</th>
                 <th className={styles.th}>AI Score</th>
-                <th className={styles.th}>Citation Feedback</th>
+                <th className={styles.th}>AI Feedback</th>
                 <th className={styles.th}>Author Comment</th>
                 </tr>
             </thead>
@@ -149,56 +146,47 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
             <tbody>
                 {filteredReferences.map((ref) => (
                 <tr key={ref.id} className={styles.row}>
+                    {/* Ref ID */}
                     <td className={styles.td}>
-                    <div className="font-mono font-semibold">
-                        {ref.cited_to_id}
-                    </div>
-
+                    <div className="font-mono font-semibold">{ref.cited_from_id}</div>
                     <div className="mt-1 flex flex-col gap-1">
                         {ref.if_key_reference && (
-                        <span
-                            className={`${styles.badge} ${styles.key}`}
-                        >
-                            🔑 Key
-                        </span>
+                        <span className={`${styles.badge} ${styles.key}`}>🔑 Key</span>
                         )}
                         {ref.if_secondary_reference && (
-                        <span
-                            className={`${styles.badge} ${styles.secondary}`}
-                        >
-                            ⚠️ 
-                        </span>
+                        <span className={`${styles.badge} ${styles.secondary}`}>⚠️ Secondary</span>
                         )}
                     </div>
                     </td>
 
+                    {/* Article Title */}
                     <td className={styles.td}>
                     <Link
-                        href={`/articles/${ref.cited_to_id}`}
+                        href={`/articles/${ref.cited_from_id}`}
                         className="font-medium text-blue-600 hover:underline"
                     >
-                        {ref.cited_to_title}
+                        {ref.cited_from_title}
                     </Link>
                     </td>
 
+                    {/* Citation Context */}
                     <td className={`${styles.td} ${styles.muted}`}>
-                    {ref.citation_content || "No context"}
+                    {ref.citation_content ? `"${ref.citation_content}"` : "No context"}
                     </td>
 
+                    {/* AI Score */}
                     <td className={styles.td}>
-                    <span
-                        className={`${styles.score} ${scoreClass(
-                        ref.ai_rated_score
-                        )}`}
-                    >
+                    <span className={`${styles.score} ${scoreClass(ref.ai_rated_score)}`}>
                         {ref.ai_rated_score}/10
                     </span>
                     </td>
 
+                    {/* AI Feedback */}
                     <td className={`${styles.td} ${styles.muted}`}>
                     {ref.feedback || "No feedback"}
                     </td>
 
+                    {/* Author Comment */}
                     <td className={`${styles.td} ${styles.muted}`}>
                     {ref.author_comment || "No comment"}
                     </td>
@@ -209,16 +197,14 @@ export default function ReferenceList({ articleId }: ReferenceListProps) {
         </div>
 
         {/* Empty after filter */}
-        {filteredReferences.length === 0 && (
+        {filteredReferences.length === 0 && references.length > 0 && (
             <div className="mt-6 rounded-lg bg-gray-100 p-6 text-center">
-            <p className="text-gray-600">
-                No key references found.
-            </p>
+            <p className="text-gray-600">No key references found.</p>
             <button
                 onClick={() => setShowOnlyKey(false)}
                 className="mt-2 text-blue-600 hover:underline"
             >
-                Show all references
+                Show all {references.length} reference{references.length !== 1 ? "s" : ""}
             </button>
             </div>
         )}

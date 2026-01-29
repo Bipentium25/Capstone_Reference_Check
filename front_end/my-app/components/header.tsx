@@ -1,17 +1,18 @@
-import Image from 'next/image'  // ← This imports the Image COMPONENT
+// components/header.tsx
+import Image from 'next/image'
 
 export default function Header() {
   return (
-    <header className="border-2 border-black p-4">
-      <div className="text-center">
-        <Image 
-          src="/image/logo.png"  // ← This points to your ACTUAL image file
-          alt="REFEX Logo" 
-          width={200}
-          height={100}
+    <div className="header-shell-inner">
+      <div className="logo-wrapper">
+        <Image
+          src="/image/Gemini_Generated_Image_2rq56o2rq56o2rq5-Picsart-BackgroundRemover.png"
+          alt="REFEX Logo"
+          priority
+          fill
+          sizes="(max-width: 768px) 200px, 300px"
         />
-        <p className="text-sm">reference validation System</p>
       </div>
-    </header>
+    </div>
   )
 }

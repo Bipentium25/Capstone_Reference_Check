@@ -70,7 +70,7 @@
 
 /* Buttons */
 .primaryBtn {
-  background-color: #2f3e4e; /* dark greyish blue */
+  background-color: #42425a; /* dark greyish blue */
   color: white;
   padding: 8px 16px;
   border-radius: 6px;
@@ -81,7 +81,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: #1f2a38; /* slightly darker on hover */
+  background-color: #3a5685; /* slightly darker on hover */
 }
 
 .primaryBtn:disabled {

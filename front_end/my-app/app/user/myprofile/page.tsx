@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useUserStore } from "@/app/store/userStore"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import styles from "./MyProfile.module.css" // CSS module
+import styles from "./MyProfile.module.css"
 
 export default function MyProfilePage() {
     const { user, setUser } = useUserStore()
@@ -29,9 +29,7 @@ export default function MyProfilePage() {
     if (!user) {
         return (
         <div className={styles.container}>
-            <div className={styles.error}>
-            Please log in to view your profile.
-            </div>
+            <div className={styles.error}>Please log in to view your profile.</div>
         </div>
         )
     }
@@ -55,13 +53,15 @@ export default function MyProfilePage() {
             body: JSON.stringify({ email: formData.email }),
             }
         )
+
         if (!res.ok) {
             if (res.status === 404) setEmailStatus("available")
             else throw new Error("Email check failed")
         } else {
             const data = await res.json()
-            setEmailStatus(data.id === user.id ? "available" : "taken")
-            if (data.id !== user.id) setError("This email is already taken")
+            const status = data.id === user.id ? "available" : "taken"
+            setEmailStatus(status)
+            if (status === "taken") setError("This email is already taken")
         }
         } catch (err) {
         console.error(err)
@@ -80,6 +80,7 @@ export default function MyProfilePage() {
         setError("This email is already in use")
         return
         }
+
         setIsLoading(true)
         setError(null)
         setSuccess(null)
@@ -182,6 +183,7 @@ export default function MyProfilePage() {
             )}
 
             <button
+                type="button"
                 className={styles.primaryBtn}
                 onClick={() => setIsEditing(true)}
                 style={{ marginTop: "16px" }}
@@ -198,7 +200,7 @@ export default function MyProfilePage() {
 
             <div className={styles.formGroup}>
                 <label>Email</label>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div className={styles.emailCheckRow}>
                 <input
                     name="email"
                     value={formData.email}
@@ -251,7 +253,11 @@ export default function MyProfilePage() {
                 <button type="submit" className={styles.primaryBtn}>
                 {isLoading ? "Saving…" : "Save Changes"}
                 </button>
-                <button type="button" onClick={handleCancel} className={styles.secondaryBtn}>
+                <button
+                type="button"
+                onClick={handleCancel}
+                className={styles.secondaryBtn}
+                >
                 Cancel
                 </button>
             </div>
@@ -259,4 +265,4 @@ export default function MyProfilePage() {
         )}
         </div>
     )
-}
+    }

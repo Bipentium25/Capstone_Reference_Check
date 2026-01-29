@@ -17,15 +17,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         {/* Global header */}
+        <header className="header-shell">
         <Header />
+        </header>
 
-        <div className="container flex">
-          {/* Sidebar always visible */}
+        <div className="container">
           <Sidebar />
-
-          {/* Main content area */}
-          <main className="main-content flex-1 p-4">
-            {children} {/* Page content renders here */}
+          <main className="main-content">
+            {children}
           </main>
         </div>
       </body>

@@ -1,0 +1,113 @@
+/* Container spacing */
+.userInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Logged-in card */
+.userCard {
+  background: #f9fafb; /* very light gray */
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  font-size: 0.95rem;
+  color: #0f172a; /* slate-900 */
+}
+
+.userCard p {
+  margin: 2px 0;
+}
+
+.userCard .info {
+  color: #475569; /* slate-600 */
+  font-size: 0.875rem;
+}
+
+/* Buttons */
+.primaryBtn {
+  background-color: #42425a; /* dark greyish blue */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  text-align: center;
+}
+
+.primaryBtn:hover {
+  background-color: #3a5685;
+}
+
+.primaryBtn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Logout button */
+.logoutBtn {
+  background-color: #42425a; /* red-700 */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.logoutBtn:hover {
+  background-color: #3a5685;
+}
+
+.logoutBtn:disabled {
+  background-color: #3969a3;
+  cursor: not-allowed;
+}
+
+/* Form inputs */
+.inputField {
+  width: 100%;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.95rem;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #64748b; /* gray-blue */
+}
+
+/* Error message */
+.errorMsg {
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+/* Article list */
+.articleList {
+  margin-top: 8px;
+}
+
+.articleList a {
+  color: #334155; /* slate-700 */
+  text-decoration: underline;
+  font-size: 0.875rem;
+}
+
+.articleList a:hover {
+  color: #1e293b; /* slightly darker slate */
+}
+
+/* Headings */
+.sectionTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}

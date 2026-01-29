@@ -36,3 +36,26 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+
+/* Header outer shell (full-width bar) */
+.header-shell {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-shell-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  height: 144px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 450px;
+  height: 150px;
+}
