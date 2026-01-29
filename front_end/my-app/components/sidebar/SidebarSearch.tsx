@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type SearchType = "author" | "title" | "article_id";
+type SearchType = "title" | "article_id"|"keywords"|"subject";
 
 type Props = {
     onSearch: (type: SearchType, query: string) => void;
@@ -19,9 +19,10 @@ export default function SidebarSearch({ onSearch }: Props) {
                 onChange={(e) => setType(e.target.value as SearchType)}
                 className="w-full border p-1"
             >
-                <option value="author">Author</option>
-                <option value="title">Article Title</option>
                 <option value="article_id">Article ID</option>
+                <option value="title">Article Title</option>
+                <option value="keywords">Keywords</option>
+                <option value="subject">Subject</option>
             </select>
 
             <input
@@ -42,3 +43,8 @@ export default function SidebarSearch({ onSearch }: Props) {
         </div>
     );
 }
+
+
+// const keywords = ["AI", "Machine Learning", "Deep Learning"];
+// const query = keywords.join(","); // "AI,Machine Learning,Deep Learning"
+// const url = `/articles/search?keyword=${encodeURIComponent(query)}`;

@@ -5,7 +5,7 @@ import { create } from 'zustand'
 
 export type SearchType = "author" | "title" | "article_id"
 
-    interface Article {
+    interface Single_Article {
     id: number
     title: string
     content: string
@@ -16,7 +16,7 @@ export type SearchType = "author" | "title" | "article_id"
     author_ids: number[]
     }
 
-    interface SearchStore {
+    interface List_of_Artilces {
     searchType: SearchType
     query: string
     results: Article[]
