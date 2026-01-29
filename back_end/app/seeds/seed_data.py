@@ -2,6 +2,7 @@
 from datetime import date
 from app.database import SessionLocal
 from app.models import Author, Article, AuthorArticle, Reference
+from app.security import hash_password
 
 def seed():
     db = SessionLocal()
@@ -9,11 +10,41 @@ def seed():
 
     # --- Authors ---
     authors_data = [
-        {"name": "Alice Zhang", "email": "alice.zhang@example.com", "institute": "MIT", "job": "Research Scientist"},
-        {"name": "Bob Smith", "email": "bob.smith@example.com", "institute": "Stanford", "job": "Professor"},
-        {"name": "Carol Lee", "email": "carol.lee@example.com", "institute": "Harvard", "job": "Postdoc"},
-        {"name": "David Wong", "email": "david.wong@example.com", "institute": "EDAM", "job": "Engineer"},
-        {"name": "Eve Chen", "email": "eve.chen@example.com", "institute": "MIT", "job": "Data Scientist"},
+        {
+            "name": "Alice Zhang",
+            "email": "alice.zhang@example.com",
+            "institute": "MIT",
+            "job": "Research Scientist",
+            "password": hash_password("password123"),
+        },
+        {
+            "name": "Bob Smith",
+            "email": "bob.smith@example.com",
+            "institute": "Stanford",
+            "job": "Professor",
+            "password": hash_password("password123"),
+        },
+        {
+            "name": "Carol Lee",
+            "email": "carol.lee@example.com",
+            "institute": "Harvard",
+            "job": "Postdoc",
+            "password": hash_password("password123"),
+        },
+        {
+            "name": "David Wong",
+            "email": "david.wong@example.com",
+            "institute": "EDAM",
+            "job": "Engineer",
+            "password": hash_password("password123"),
+        },
+        {
+            "name": "Eve Chen",
+            "email": "eve.chen@example.com",
+            "institute": "MIT",
+            "job": "Data Scientist",
+            "password": hash_password("password123"),
+        },
     ]
     authors = [Author(**data) for data in authors_data]
     db.add_all(authors)
