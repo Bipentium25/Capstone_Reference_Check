@@ -7,6 +7,7 @@ from app.models.author_article import AuthorArticle
 from app.database import get_db
 from datetime import date
 from app.schema import ArticleIn, ArticleOut
+from sqlalchemy import or_
 
 router = APIRouter(
     prefix="/articles",
@@ -40,6 +41,41 @@ def serialize_article(article: Article, input_order_authors: Optional[List[Autho
         author_names=author_names,
         author_ids=author_ids
     )
+
+# -------------------- Unified Search --------------------
+@router.get("/search", response_model=List[ArticleOut])
+def search_articles(
+    title: Optional[str] = Query(None, description="Search in article title (partial, case-insensitive)"),
+    subject: Optional[str] = Query(None, description="Search in article subject (partial, case-insensitive)"),
+    keyword: Optional[str] = Query(None, description="Comma-separated keywords (partial, case-insensitive)"),
+    db: Session = Depends(get_db)
+):
+    """
+    Unified search for articles by title, subject, and/or keywords.
+    Partial, case-insensitive match. Keywords can be comma-separated.
+    """
+    query = db.query(Article)
+
+    # Title filter
+    if title:
+        query = query.filter(Article.title.ilike(f"%{title}%"))
+
+    # Subject filter
+    if subject:
+        query = query.filter(Article.subject.ilike(f"%{subject}%"))
+
+    # Keyword filter
+    if keyword:
+        keywords_list = [k.strip() for k in keyword.split(",") if k.strip()]
+        conditions = [Article.keywords.ilike(f"%{k}%") for k in keywords_list]
+        query = query.filter(or_(*conditions))
+
+    articles = query.all()
+
+    if not articles:
+        raise HTTPException(status_code=404, detail="No articles found matching search criteria")
+
+    return [serialize_article(a) for a in articles]
 
 # -------------------- Routes --------------------
 @router.get("/authors/{author_id}/articles", response_model=List[ArticleOut])
@@ -128,27 +164,3 @@ def create_article(article_in: ArticleIn, db: Session = Depends(get_db)):
         author_ids=author_ids
     )
 
-# -------------------- Unified Search --------------------
-@router.get("/search", response_model=List[ArticleOut])
-def search_articles(
-    subject: Optional[str] = Query(None, description="Search subject (partial, case-insensitive)"),
-    keyword: Optional[str] = Query(None, description="Search keyword (partial, case-insensitive)"),
-    db: Session = Depends(get_db)
-):
-    """
-    Search articles by subject and/or keyword.
-    Both filters are optional; partial, case-insensitive matching.
-    """
-    query = db.query(Article)
-
-    if subject:
-        query = query.filter(Article.subject.ilike(f"%{subject}%"))
-    if keyword:
-        query = query.filter(Article.keywords.ilike(f"%{keyword}%"))
-
-    articles = query.all()
-
-    if not articles:
-        raise HTTPException(status_code=404, detail="No articles found matching the search criteria")
-
-    return [serialize_article(article) for article in articles]

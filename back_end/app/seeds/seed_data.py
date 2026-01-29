@@ -56,27 +56,48 @@ def seed():
     articles_data = [
         {
             "title": "Quantum Computing Advances",
-            "content": "Exploring new qubit architectures and error correction techniques.",
+            "content": (
+                "Quantum computing continues to advance rapidly, exploring new qubit architectures, "
+                "error correction techniques, and hybrid quantum-classical algorithms. Recent studies focus "
+                "on reducing decoherence effects and improving gate fidelities to enable scalable quantum "
+                "applications across cryptography, optimization, and simulation of complex systems."
+            ),
             "published_journal": "Journal of Quantum Tech",
             "published_date": date(2024, 5, 20),
-            "corresponding_author": authors[0],
-            "author_names": "Alice Zhang, Bob Smith"
+            "corresponding_author_id": authors[0].id,
+            "author_names": "Alice Zhang, Bob Smith",
+            "subject": "Quantum Computing",
+            "keywords": "Quantum, Qubit, Error Correction, Algorithms"
         },
         {
             "title": "Machine Learning in Energy Systems",
-            "content": "Applying ML to predict energy consumption patterns.",
+            "content": (
+                "Machine learning techniques are applied to energy systems for predicting consumption patterns, "
+                "optimizing grid performance, and integrating renewable sources effectively. Models like "
+                "neural networks and ensemble methods provide accurate forecasting, improving reliability "
+                "and efficiency in power distribution, while enabling data-driven decisions in smart grids."
+            ),
             "published_journal": "Energy Journal",
             "published_date": date(2023, 11, 10),
-            "corresponding_author": authors[1],
-            "author_names": "Bob Smith, Carol Lee"
+            "corresponding_author_id": authors[1].id,
+            "author_names": "Bob Smith, Carol Lee",
+            "subject": "Energy Systems",
+            "keywords": "Machine Learning, Energy, Forecasting, Smart Grid"
         },
         {
             "title": "Data-Driven Optimization",
-            "content": "Optimization ideas inspired by AI and quantum computing.",
+            "content": (
+                "Optimization techniques informed by data analytics and artificial intelligence are transforming "
+                "industrial and computational processes. Approaches focus on maximizing efficiency, reducing "
+                "costs, and improving system performance by leveraging predictive modeling, reinforcement "
+                "learning, and simulation-based optimization in complex, real-world applications."
+            ),
             "published_journal": "Optimization Letters",
             "published_date": date(2024, 1, 15),
-            "corresponding_author": authors[2],
-            "author_names": "Carol Lee, David Wong, Eve Chen"
+            "corresponding_author_id": authors[2].id,
+            "author_names": "Carol Lee, David Wong, Eve Chen",
+            "subject": "Optimization",
+            "keywords": "Optimization, AI, Data Analytics, Reinforcement Learning"
         }
     ]
     articles = [Article(**data) for data in articles_data]
