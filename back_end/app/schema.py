@@ -9,6 +9,8 @@ class ArticleIn(BaseModel):
     content: str
     published_journal: str
     published_date: date
+    subject: Optional[str] = None
+    keywords: List[str] = []
     corresponding_author_email: str
     author_names: List[str]
     author_emails: List[Optional[str]]  # aligned list, None if unknown
@@ -19,6 +21,8 @@ class ArticleOut(BaseModel):
     content: str
     published_journal: str
     published_date: date
+    subject: Optional[str] = None
+    keywords: List[str] = []
     corresponding_author_id: Optional[int] = None
     author_names: List[str]
     author_ids: List[Optional[int]] = []  # aligned with names

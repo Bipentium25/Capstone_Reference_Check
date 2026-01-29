@@ -13,6 +13,8 @@ class Article(Base):
     published_date = Column(Date, server_default=text('CURRENT_DATE'))
     author_names = Column(String, nullable=False)  # optional human-readable
     corresponding_author_id = Column(Integer, ForeignKey("authors.id"), nullable=False)
+    subject = Column(String, nullable=True)
+    keywords = Column(String, nullable=True) 
 
     # relationship to corresponding author
     corresponding_author = relationship("Author", foreign_keys=[corresponding_author_id])

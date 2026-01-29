@@ -1,41 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.article import Article
 from app.models.author import Author
 from app.models.author_article import AuthorArticle
 from app.database import get_db
-from pydantic import BaseModel
 from datetime import date
+from app.schema import ArticleIn, ArticleOut
 
 router = APIRouter(
     prefix="/articles",
     tags=["articles"]
 )
-
-# -------------------- Pydantic models --------------------
-class ArticleIn(BaseModel):
-    title: str
-    content: str
-    published_journal: str
-    published_date: date
-    corresponding_author_email: str
-    author_names: List[str]
-    author_emails: List[Optional[str]]  # aligned list, None if unknown
-
-class ArticleOut(BaseModel):
-    id: int
-    title: str
-    content: str
-    published_journal: str
-    published_date: date
-    corresponding_author_id: Optional[int] = None
-    author_names: List[str]
-    author_ids: List[Optional[int]] = []  # aligned with names
-
-    model_config = {
-        "from_attributes": True
-    }
 
 # -------------------- Helper --------------------
 def serialize_article(article: Article, input_order_authors: Optional[List[Author]] = None) -> ArticleOut:
@@ -59,6 +35,8 @@ def serialize_article(article: Article, input_order_authors: Optional[List[Autho
         published_journal=article.published_journal,
         published_date=article.published_date,
         corresponding_author_id=article.corresponding_author_id,
+        subject=article.subject,
+        keywords=article.keywords.split(", ") if article.keywords else [],
         author_names=author_names,
         author_ids=author_ids
     )
@@ -93,26 +71,26 @@ def delete_article_by_id(id: int, db: Session = Depends(get_db)):
 # -------------------- Create Article --------------------
 @router.post("/", response_model=ArticleOut)
 def create_article(article_in: ArticleIn, db: Session = Depends(get_db)):
-    # Validate input list lengths
     if len(article_in.author_names) != len(article_in.author_emails):
         raise HTTPException(status_code=400, detail="author_names and author_emails length mismatch")
 
-    # Find corresponding author
-    corresponding_author = db.query(Author).filter(Author.email == article_in.corresponding_author_email).first()
+    corresponding_author = db.query(Author).filter(
+        Author.email == article_in.corresponding_author_email
+    ).first()
     if not corresponding_author:
-        raise HTTPException(status_code=404, detail=f"Corresponding author '{article_in.corresponding_author_email}' not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Corresponding author '{article_in.corresponding_author_email}' not found"
+        )
 
-    # Prepare authors list aligned with input order
-    authors = []
-    for name, email in zip(article_in.author_names, article_in.author_emails):
+    # Map emails to DB author IDs (None if not found)
+    author_ids = []
+    for email in article_in.author_emails:
         if email:
             author = db.query(Author).filter(Author.email == email).first()
-            if author:
-                authors.append(author)
-            else:
-                authors.append(Author(name=name, email=None))  # placeholder, not in DB
+            author_ids.append(author.id if author else None)
         else:
-            authors.append(Author(name=name, email=None))  # placeholder, not in DB
+            author_ids.append(None)
 
     # Create article
     article = Article(
@@ -120,18 +98,57 @@ def create_article(article_in: ArticleIn, db: Session = Depends(get_db)):
         content=article_in.content,
         published_journal=article_in.published_journal,
         published_date=article_in.published_date,
+        subject=article_in.subject,
+        keywords=", ".join(article_in.keywords),
         corresponding_author_id=corresponding_author.id,
         author_names=", ".join(article_in.author_names)
     )
+
     db.add(article)
+    db.flush()  # assigns article.id without committing yet
+
+    # Link real authors only
+    for author_id in author_ids:
+        if author_id:
+            db.add(AuthorArticle(article_id=article.id, author_id=author_id))
+
     db.commit()
     db.refresh(article)
 
-    # Link only authors that exist in DB (have id)
-    for author in authors:
-        if author.id:
-            link = AuthorArticle(article=article, author=author)
-            article.author_links.append(link)
+    return ArticleOut(
+        id=article.id,
+        title=article.title,
+        content=article.content,
+        published_journal=article.published_journal,
+        published_date=article.published_date,
+        corresponding_author_id=article.corresponding_author_id,
+        subject=article.subject,
+        keywords=article.keywords.split(", ") if article.keywords else [],
+        author_names=article_in.author_names,
+        author_ids=author_ids
+    )
 
-    db.commit()
-    return serialize_article(article, input_order_authors=authors)
+# -------------------- Unified Search --------------------
+@router.get("/search", response_model=List[ArticleOut])
+def search_articles(
+    subject: Optional[str] = Query(None, description="Search subject (partial, case-insensitive)"),
+    keyword: Optional[str] = Query(None, description="Search keyword (partial, case-insensitive)"),
+    db: Session = Depends(get_db)
+):
+    """
+    Search articles by subject and/or keyword.
+    Both filters are optional; partial, case-insensitive matching.
+    """
+    query = db.query(Article)
+
+    if subject:
+        query = query.filter(Article.subject.ilike(f"%{subject}%"))
+    if keyword:
+        query = query.filter(Article.keywords.ilike(f"%{keyword}%"))
+
+    articles = query.all()
+
+    if not articles:
+        raise HTTPException(status_code=404, detail="No articles found matching the search criteria")
+
+    return [serialize_article(article) for article in articles]
