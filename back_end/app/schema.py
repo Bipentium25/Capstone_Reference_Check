@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 from datetime import date
-
+from pydantic import Field
 
 # -------------------- article models --------------------
 class ArticleIn(BaseModel):

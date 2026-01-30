@@ -8,139 +8,239 @@ def seed():
     db = SessionLocal()
     print("🔹 Seeding database...")
 
-    # --- Authors ---
+    # -------------------- Authors --------------------
     authors_data = [
-        {
-            "name": "Alice Zhang",
-            "email": "alice.zhang@example.com",
-            "institute": "MIT",
-            "job": "Research Scientist",
-            "password": hash_password("password123"),
-        },
-        {
-            "name": "Bob Smith",
-            "email": "bob.smith@example.com",
-            "institute": "Stanford",
-            "job": "Professor",
-            "password": hash_password("password123"),
-        },
-        {
-            "name": "Carol Lee",
-            "email": "carol.lee@example.com",
-            "institute": "Harvard",
-            "job": "Postdoc",
-            "password": hash_password("password123"),
-        },
-        {
-            "name": "David Wong",
-            "email": "david.wong@example.com",
-            "institute": "EDAM",
-            "job": "Engineer",
-            "password": hash_password("password123"),
-        },
-        {
-            "name": "Eve Chen",
-            "email": "eve.chen@example.com",
-            "institute": "MIT",
-            "job": "Data Scientist",
-            "password": hash_password("password123"),
-        },
+        {"name": "Alice Zhang", "email": "alice.zhang@example.com", "institute": "MIT", "job": "Research Scientist"},
+        {"name": "Bob Smith", "email": "bob.smith@example.com", "institute": "Stanford", "job": "Professor"},
+        {"name": "Carol Lee", "email": "carol.lee@example.com", "institute": "Harvard", "job": "Postdoc"},
+        {"name": "David Wong", "email": "david.wong@example.com", "institute": "EDAM", "job": "Engineer"},
+        {"name": "Eve Chen", "email": "eve.chen@example.com", "institute": "MIT", "job": "Data Scientist"},
     ]
-    authors = [Author(**data) for data in authors_data]
+
+    authors = [
+        Author(**data, password=hash_password("password123"))
+        for data in authors_data
+    ]
     db.add_all(authors)
     db.commit()
-    for author in authors:
-        db.refresh(author)
+    for a in authors:
+        db.refresh(a)
 
-    # --- Articles ---
+    # -------------------- Articles (10) --------------------
     articles_data = [
         {
             "title": "Quantum Computing Advances",
             "content": (
-                "Quantum computing continues to advance rapidly, exploring new qubit architectures, "
-                "error correction techniques, and hybrid quantum-classical algorithms. Recent studies focus "
-                "on reducing decoherence effects and improving gate fidelities to enable scalable quantum "
-                "applications across cryptography, optimization, and simulation of complex systems."
-            ),
+    "Recent progress in quantum computing has focused on scalable qubit architectures, "
+    "robust error correction mechanisms, and noise mitigation strategies. Researchers "
+    "investigate hybrid quantum-classical algorithms to improve performance in cryptography, "
+    "optimization, and physical simulations, aiming to bridge theoretical models with "
+    "practical, fault-tolerant quantum systems."
+    ),
             "published_journal": "Journal of Quantum Tech",
             "published_date": date(2024, 5, 20),
             "corresponding_author_id": authors[0].id,
             "author_names": "Alice Zhang, Bob Smith",
             "subject": "Quantum Computing",
-            "keywords": "Quantum, Qubit, Error Correction, Algorithms"
+            "keywords": "Quantum, Qubit, Error Correction",
         },
         {
             "title": "Machine Learning in Energy Systems",
             "content": (
-                "Machine learning techniques are applied to energy systems for predicting consumption patterns, "
-                "optimizing grid performance, and integrating renewable sources effectively. Models like "
-                "neural networks and ensemble methods provide accurate forecasting, improving reliability "
-                "and efficiency in power distribution, while enabling data-driven decisions in smart grids."
-            ),
+    "Machine learning methods are increasingly applied to modern energy systems to enhance "
+    "demand forecasting, fault detection, and grid stability. By leveraging historical and "
+    "real-time data, predictive models improve resource allocation, support renewable energy "
+    "integration, and enable adaptive control strategies for intelligent power networks."
+),
             "published_journal": "Energy Journal",
             "published_date": date(2023, 11, 10),
             "corresponding_author_id": authors[1].id,
             "author_names": "Bob Smith, Carol Lee",
             "subject": "Energy Systems",
-            "keywords": "Machine Learning, Energy, Forecasting, Smart Grid"
+            "keywords": "Machine Learning, Energy, Forecasting",
         },
         {
             "title": "Data-Driven Optimization",
             "content": (
-                "Optimization techniques informed by data analytics and artificial intelligence are transforming "
-                "industrial and computational processes. Approaches focus on maximizing efficiency, reducing "
-                "costs, and improving system performance by leveraging predictive modeling, reinforcement "
-                "learning, and simulation-based optimization in complex, real-world applications."
-            ),
+    "Data-driven optimization combines statistical analysis with artificial intelligence to "
+    "improve decision-making in complex systems. By integrating predictive models, simulation, "
+    "and reinforcement learning, these methods reduce computational costs while achieving "
+    "near-optimal solutions across logistics, manufacturing, and large-scale engineering problems."
+),
             "published_journal": "Optimization Letters",
             "published_date": date(2024, 1, 15),
             "corresponding_author_id": authors[2].id,
             "author_names": "Carol Lee, David Wong, Eve Chen",
             "subject": "Optimization",
-            "keywords": "Optimization, AI, Data Analytics, Reinforcement Learning"
-        }
+            "keywords": "Optimization, AI, Data Analytics",
+        },
+        {
+            "title": "Reinforcement Learning for Control",
+            "content": (
+    "Reinforcement learning provides a flexible framework for controlling dynamic systems under "
+    "uncertainty. Agents learn optimal policies through interaction with environments, enabling "
+    "adaptive control in robotics, autonomous vehicles, and industrial processes where traditional "
+    "model-based control approaches struggle to generalize effectively."
+),
+            "published_journal": "AI Control Review",
+            "published_date": date(2024, 2, 2),
+            "corresponding_author_id": authors[4].id,
+            "author_names": "Eve Chen, Alice Zhang",
+            "subject": "Reinforcement Learning",
+            "keywords": "RL, Control, AI",
+        },
+        {
+            "title": "Scalable Neural Architectures",
+            "content": (
+    "Scalable neural architectures address the growing computational demands of deep learning "
+    "models. Research focuses on efficient parameterization, parallel training strategies, and "
+    "hardware-aware design. These approaches enable large models to maintain performance while "
+    "reducing memory usage, energy consumption, and training time in practical deployments."
+),
+            "published_journal": "Neural Computing",
+            "published_date": date(2023, 8, 12),
+            "corresponding_author_id": authors[1].id,
+            "author_names": "Bob Smith",
+            "subject": "Deep Learning",
+            "keywords": "Neural Networks, Scaling",
+        },
+        {
+            "title": "Hybrid Quantum-Classical Models",
+            "content": (
+    "Hybrid quantum-classical models combine classical machine learning pipelines with quantum "
+    "circuits to exploit advantages of both paradigms. Classical components handle data preprocessing "
+    "and optimization, while quantum layers perform specialized transformations, offering potential "
+    "improvements in expressiveness for complex learning tasks."
+),
+            "published_journal": "Quantum AI",
+            "published_date": date(2024, 6, 1),
+            "corresponding_author_id": authors[0].id,
+            "author_names": "Alice Zhang, Eve Chen",
+            "subject": "Quantum AI",
+            "keywords": "Quantum, Hybrid Models",
+        },
+        {
+            "title": "Energy Forecasting with Transformers",
+            "content": (
+    "Transformer-based architectures have demonstrated strong performance in energy forecasting "
+    "tasks by capturing long-range temporal dependencies. Attention mechanisms allow models to "
+    "identify critical patterns in consumption data, leading to more accurate predictions and "
+    "supporting improved planning and reliability in smart energy infrastructures."
+),
+            "published_journal": "Energy AI",
+            "published_date": date(2024, 3, 18),
+            "corresponding_author_id": authors[2].id,
+            "author_names": "Carol Lee, Bob Smith",
+            "subject": "Energy Forecasting",
+            "keywords": "Transformers, Energy",
+        },
+        {
+            "title": "Simulation-Based Optimization",
+            "content": (
+    "Simulation-based optimization leverages computational models to evaluate decision strategies "
+    "before real-world deployment. By iteratively simulating scenarios and refining parameters, "
+    "this approach enables robust optimization under uncertainty, particularly in engineering, "
+    "transportation, and resource management applications."
+),
+            "published_journal": "Simulation Journal",
+            "published_date": date(2023, 12, 5),
+            "corresponding_author_id": authors[3].id,
+            "author_names": "David Wong",
+            "subject": "Simulation",
+            "keywords": "Simulation, Optimization",
+        },
+        {
+            "title": "Multi-Agent Systems in Smart Grids",
+            "content": (
+    "Multi-agent systems enable decentralized coordination in smart grids by modeling generators, "
+    "consumers, and storage units as autonomous agents. Through communication and negotiation, "
+    "agents collectively optimize energy distribution, enhance resilience, and respond efficiently "
+    "to dynamic changes in supply and demand."
+),
+            "published_journal": "Smart Grid Review",
+            "published_date": date(2024, 4, 9),
+            "corresponding_author_id": authors[4].id,
+            "author_names": "Eve Chen, Carol Lee",
+            "subject": "Multi-Agent Systems",
+            "keywords": "Agents, Smart Grid",
+        },
+        {
+            "title": "Explainable AI for Scientific Models",
+            "content": (
+    "Explainable artificial intelligence aims to improve transparency and trust in complex models "
+    "used for scientific discovery. By providing interpretable insights into model behavior, XAI "
+    "techniques support validation, error analysis, and informed decision-making in high-stakes "
+    "scientific and engineering applications."
+),
+            "published_journal": "XAI Journal",
+            "published_date": date(2023, 10, 30),
+            "corresponding_author_id": authors[0].id,
+            "author_names": "Alice Zhang, David Wong",
+            "subject": "Explainable AI",
+            "keywords": "XAI, Interpretability",
+        },
     ]
+
     articles = [Article(**data) for data in articles_data]
     db.add_all(articles)
     db.commit()
-    for article in articles:
-        db.refresh(article)
+    for art in articles:
+        db.refresh(art)
 
-    # --- AuthorArticle links ---
-    links_data = [
-        (articles[0], [authors[0], authors[1]]),
-        (articles[1], [authors[1], authors[2]]),
-        (articles[2], [authors[2], authors[3], authors[4]]),
-    ]
+    # -------------------- AuthorArticle links --------------------
+    author_map = {
+        0: [0, 1],
+        1: [1, 2],
+        2: [2, 3, 4],
+        3: [4, 0],
+        4: [1],
+        5: [0, 4],
+        6: [2, 1],
+        7: [3],
+        8: [4, 2],
+        9: [0, 3],
+    }
+
     links = [
-        AuthorArticle(article_id=article.id, author_id=author.id)
-        for article, author_list in links_data
-        for author in author_list
+        AuthorArticle(article_id=articles[a].id, author_id=authors[u].id)
+        for a, users in author_map.items()
+        for u in users
     ]
     db.add_all(links)
     db.commit()
 
-    # --- References ---
+    # -------------------- References (12+) --------------------
     references_data = [
-        (articles[0].id, articles[1].id, True, False, "Inspired by energy system predictions.", "Reference: quantum computing principles applied to ML."),
-        (articles[1].id, articles[2].id, False, True, "Optimization techniques inspired by ML.", "Reference: data-driven optimization methodology."),
-        (articles[2].id, articles[0].id, True, True, "Applying quantum techniques.", "Reference: feedback loop from prior quantum research."),
+        (0, 1, True, False),
+        (1, 2, False, True),
+        (2, 3, True, True),
+        (3, 4, False, False),
+        (4, 5, True, False),
+        (5, 0, False, True),
+        (6, 1, True, False),
+        (6, 2, False, True),
+        (7, 2, True, False),
+        (8, 6, False, False),
+        (9, 0, True, True),
+        (9, 3, False, True),
     ]
+
     references = [
         Reference(
-            cited_from_id=from_id,
-            cited_to_id=to_id,
+            cited_from_id=articles[f].id,
+            cited_to_id=articles[t].id,
             if_key_reference=key,
             if_secondary_reference=secondary,
-            citation_content=citation_content,
-            content=content
+            citation_content=f"Cites methods or data from {articles[t].title}",
+            content=f"Reference discussing relationship between {articles[f].title} and {articles[t].title}",
         )
-        for from_id, to_id, key, secondary, citation_content, content in references_data
+        for f, t, key, secondary in references_data
     ]
+
     db.add_all(references)
     db.commit()
 
-    print("✅ Database seeded successfully!")
+    print("✅ Database seeded successfully with complex relationships!")
 
 if __name__ == "__main__":
     seed()
