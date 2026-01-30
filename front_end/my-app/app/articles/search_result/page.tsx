@@ -161,7 +161,7 @@ interface Article {
             <div className={styles.noResults}>
             <div className={styles.noResultsIcon}>🔍</div>
             <h2>No Articles Found</h2>
-            <p>We couldn't find any articles matching your search criteria.</p>
+            <p>No articles in data base matching your search criteria.</p>
             <div className={styles.suggestions}>
                 <h3>Try:</h3>
                 <ul>

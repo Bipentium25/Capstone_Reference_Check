@@ -138,7 +138,7 @@ interface Reference {
                 <th className={styles.th}>Article</th>
                 <th className={styles.th}>Citation Context</th>
                 <th className={styles.th}>AI Score</th>
-                <th className={styles.th}>AI Feedback</th>
+                <th className={styles.th}>Citation Feedback</th>
                 <th className={styles.th}>Author Comment</th>
                 </tr>
             </thead>
@@ -148,7 +148,7 @@ interface Reference {
                 <tr key={ref.id} className={styles.row}>
                     {/* Ref ID */}
                     <td className={styles.td}>
-                    <div className="font-mono font-semibold">{ref.cited_from_id}</div>
+                    <div className="font-mono font-semibold">{ref.cited_to_id}</div>
                     <div className="mt-1 flex flex-col gap-1">
                         {ref.if_key_reference && (
                         <span className={`${styles.badge} ${styles.key}`}>🔑</span>
@@ -162,10 +162,10 @@ interface Reference {
                     {/* Article Title */}
                     <td className={styles.td}>
                     <Link
-                        href={`/articles/${ref.cited_from_id}`}
+                        href={`/articles/${ref.cited_to_id}`}
                         className="font-medium text-blue-600 hover:underline"
                     >
-                        {ref.cited_from_title}
+                        {ref.cited_to_title}
                     </Link>
                     </td>
 
@@ -181,7 +181,7 @@ interface Reference {
                     </span>
                     </td>
 
-                    {/* AI Feedback */}
+                    {/* Author Feedback */}
                     <td className={`${styles.td} ${styles.muted}`}>
                     {ref.feedback || "No feedback"}
                     </td>

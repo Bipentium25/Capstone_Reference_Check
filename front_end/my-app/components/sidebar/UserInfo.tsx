@@ -73,6 +73,12 @@ export default function UserInfo() {
             </div>
             )}
 
+            {/* NEW: Submit Article Button */}
+            <Link href="/articles/new" className={styles.submitBtn}>
+            New Article
+            </Link>
+
+
             <button onClick={logout} className={styles.logoutBtn}>
             Log out
             </button>
@@ -100,7 +106,7 @@ export default function UserInfo() {
             className={styles.inputField}
         />
         <button type="submit" className={styles.primaryBtn}>
-        Log in
+            Log in
         </button>
 
         <Link href="/user/new" className={styles.secondaryBtn}>

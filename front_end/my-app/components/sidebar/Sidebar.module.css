@@ -39,7 +39,7 @@
   padding: 8px 16px;
   border-radius: 6px;
   font-weight: 500;
-  border: 1px solid #66A0C1; /* slightly darker border */
+  border: 1px solid #334a7e; /* slightly darker border */
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
   width: 100%;
@@ -53,5 +53,5 @@
 
 .homeBtn:hover {
   background-color: #5F9EC2; /* darker blue on hover */
-  border-color: #4F8BA8;
+  border-color: #4f5ca8;
 }
