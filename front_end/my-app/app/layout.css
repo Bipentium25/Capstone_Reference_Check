@@ -16,17 +16,24 @@ body {
   min-height: calc(100vh - 64px); /* assume header ~64px */
   gap: 16px;
   padding: 16px;
+    background-color: #f5f6f8;
+
 }
 
 /* Sidebar block */
+/* Sidebar container */
 .sidebar {
   width: 240px;
   background-color: #ffffff;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
-
 /* Main content block */
 .main-content {
   flex: 1;

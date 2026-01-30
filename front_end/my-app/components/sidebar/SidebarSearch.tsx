@@ -1,50 +1,86 @@
-"use client";
+// components/sidebar/SidebarSearch.tsx
+"use client"
 
-import { useState } from "react";
+import { useState, FormEvent } from "react"
+import { useRouter } from "next/navigation"
+import styles from "./SidebarSearch.module.css"
 
-type SearchType = "title" | "article_id"|"keywords"|"subject";
+type SearchType = "title" | "subject" | "keyword" | "article_id"
 
-type Props = {
-    onSearch: (type: SearchType, query: string) => void;
-};
+export default function SidebarSearch() {
+    const router = useRouter()
+    const [searchType, setSearchType] = useState<SearchType>("title")
+    const [query, setQuery] = useState("")
 
-export default function SidebarSearch({ onSearch }: Props) {
-    const [type, setType] = useState<SearchType>("title");
-    const [query, setQuery] = useState("");
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault()
+        
+        if (!query.trim()) return
+        
+        // Build URL based on search type
+        if (searchType === "article_id") {
+        // Direct navigation to article
+        router.push(`/articles/${query.trim()}`)
+        } else {
+        // Navigate to search results with appropriate query param
+        router.push(`/articles/search_result?${searchType}=${encodeURIComponent(query.trim())}`)
+        }
+        
+        // Clear search after submitting
+        setQuery("")
+    }
+
+    const getPlaceholder = () => {
+        switch (searchType) {
+        case "title":
+            return "e.g., Quantum Computing"
+        case "subject":
+            return "e.g., Physics"
+        case "keyword":
+            return "e.g., AI, Machine Learning"
+        case "article_id":
+            return "e.g., 23"
+        default:
+            return "Enter search query..."
+        }
+    }
 
     return (
-        <div className="space-y-2">
-            <select
-                value={type}
-                onChange={(e) => setType(e.target.value as SearchType)}
-                className="w-full border p-1"
-            >
-                <option value="article_id">Article ID</option>
-                <option value="title">Article Title</option>
-                <option value="keywords">Keywords</option>
-                <option value="subject">Subject</option>
-            </select>
+        <form onSubmit={handleSearch} className={styles.searchContainer}>
+        <h3 className={styles.searchTitle}>Search Articles</h3>
+        
+        <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value as SearchType)}
+            className={styles.selectField}
+        >
+            <option value="title">Article Title</option>
+            <option value="subject">Subject</option>
+            <option value="keyword">Keywords</option>
+            <option value="article_id">Article ID</option>
+        </select>
 
-            <input
-                type="text"
-                placeholder="Search..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full border p-1"
-            />
+        <input
+            type="text"
+            placeholder={getPlaceholder()}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={styles.inputField}
+        />
 
-            <button
-                className="w-full rounded bg-black py-1 text-white disabled:bg-gray-400"
-                onClick={() => onSearch(type, query)}
-                disabled={!query.trim()}
-            >
-                Search
-            </button>
-        </div>
-    );
-}
+        {searchType === "keyword" && (
+            <small className={styles.hint}>
+            Separate multiple keywords with commas
+            </small>
+        )}
 
-
-// const keywords = ["AI", "Machine Learning", "Deep Learning"];
-// const query = keywords.join(","); // "AI,Machine Learning,Deep Learning"
-// const url = `/articles/search?keyword=${encodeURIComponent(query)}`;
+        <button
+            type="submit"
+            className={styles.searchBtn}
+            disabled={!query.trim()}
+        >
+            Search
+        </button>
+        </form>
+    )
+    }

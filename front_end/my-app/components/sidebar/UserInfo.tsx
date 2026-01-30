@@ -100,8 +100,13 @@ export default function UserInfo() {
             className={styles.inputField}
         />
         <button type="submit" className={styles.primaryBtn}>
-            Log in
+        Log in
         </button>
+
+        <Link href="/user/new" className={styles.secondaryBtn}>
+            New user
+        </Link>
+
         {error && <p className={styles.errorMsg}>{error}</p>}
         </form>
     )

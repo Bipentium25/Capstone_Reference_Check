@@ -1,10 +1,10 @@
-// app/user/[id]/page.tsx
 "use client"
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useUserStore } from "@/app/store/userStore"
+import styles from "./User_id.module.css"
 
 interface UserProfile {
   id: number
@@ -63,7 +63,7 @@ export default function UserProfilePage() {
   
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className={styles.pageWrapper + " flex items-center justify-center"}>
         <div className="text-lg text-gray-600">Loading user profile...</div>
       </div>
     )
@@ -94,42 +94,40 @@ export default function UserProfilePage() {
     )
   }
   
-  // Check if this is the logged-in user's own profile
   const isOwnProfile = loggedInUser?.id === profile.id
   
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-4xl px-6">
+    <div className={styles.pageWrapper}>
+      <div className={styles.container}>
         
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center text-blue-600 hover:text-blue-800"
+          className={styles.backButton}
         >
-          <span className="mr-2">←</span>
+          <span>←</span>
           <span>Back</span>
         </button>
         
         {/* Profile Card */}
-        <div className="rounded-lg bg-white shadow-lg">
+        <div className={styles.profileCard}>
           
           {/* Header Section */}
-          <div className="border-b border-gray-200 px-8 py-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-gray-900">
+          <div className={styles.profileHeader}>
+            <div className={styles.profileHeaderTop}>
+              <h1 className={styles.profileName}>
                 {profile.name}
                 {isOwnProfile && (
-                  <span className="ml-3 text-base font-normal text-gray-500">
-                    (Your Profile)
+                  <span className={styles.profileSubtext}>
+                    (Profile)
                   </span>
                 )}
               </h1>
               
-              {/* Edit button only for own profile */}
               {isOwnProfile && (
                 <Link
                   href="/user/myprofile"
-                  className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                  className={styles.editButton}
                 >
                   Edit Profile
                 </Link>
@@ -137,61 +135,60 @@ export default function UserProfilePage() {
             </div>
             
             {/* User Info */}
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <span className="mr-2 font-semibold text-gray-700">Email:</span>
-                <span className="text-gray-600">{profile.email}</span>
+            <div className={styles.infoList}>
+              <div className={styles.infoRow}>
+                <span className={styles.label}>Email:</span>
+                <span className={styles.value}>{profile.email}</span>
               </div>
               
               {profile.institute && (
-                <div className="flex items-start">
-                  <span className="mr-2 font-semibold text-gray-700">Institute:</span>
-                  <span className="text-gray-600">{profile.institute}</span>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Institute:</span>
+                  <span className={styles.value}>{profile.institute}</span>
                 </div>
               )}
               
               {profile.job && (
-                <div className="flex items-start">
-                  <span className="mr-2 font-semibold text-gray-700">Position:</span>
-                  <span className="text-gray-600">{profile.job}</span>
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Position:</span>
+                  <span className={styles.value}>{profile.job}</span>
                 </div>
               )}
               
-              <div className="flex items-start">
+              <div className={styles.infoRow}>
                 <span className="text-xs text-gray-400">User ID: {profile.id}</span>
               </div>
             </div>
           </div>
           
           {/* Articles Section */}
-          <div className="px-8 py-6">
-            <h2 className="mb-4 text-xl font-semibold text-gray-900">
-              {isOwnProfile ? "Your Articles" : "Published Articles"}
+          <div className={styles.articlesSection}>
+            <h2 className={styles.articlesTitle}>
+              {isOwnProfile ? "Articles" : "Published Articles"}
             </h2>
             
             {profile.articles && profile.articles.length > 0 ? (
-              <div className="space-y-3">
+              <div>
                 {profile.articles.map((article) => (
                   <Link
                     key={article.id}
                     href={`/articles/${article.id}`}
-                    className="block rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-500 hover:shadow-md"
+                    className={styles.articleCard}
                   >
-                    <h3 className="text-lg font-medium text-blue-600 hover:underline">
+                    <h3 className={styles.articleTitle}>
                       {article.title}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className={styles.articleSubtitle}>
                       Click to read article →
                     </p>
                   </Link>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">
+              <p className={styles.articleSubtitle}>
                 {isOwnProfile 
                   ? "You haven't published any articles yet." 
-                  : "This user hasn't published any articles yet."
-                }
+                  : "This user hasn't published any articles yet."}
               </p>
             )}
           </div>
@@ -199,10 +196,10 @@ export default function UserProfilePage() {
         </div>
         
         {/* Actions */}
-        <div className="mt-6 flex gap-3">
+        <div className={styles.actions}>
           <button
             onClick={() => router.back()}
-            className="rounded bg-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-300"
+            className={`${styles.actionButton} ${styles.backAction}`}
           >
             Back
           </button>

@@ -1,0 +1,271 @@
+/* app/articles/search_result/SearchResult.module.css */
+
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem 1.5rem;
+}
+
+/* Loading State */
+.loading {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.loading p {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-top: 1rem;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto;
+  border: 4px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.error {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border: 1px solid #fca5a5;
+  background-color: #fef2f2;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.error h2 {
+  color: #991b1b;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.error p {
+  color: #dc2626;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Header */
+.header {
+  max-width: 56rem;
+  margin: 0 auto 2rem;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #e5e7eb;
+  border: none;
+  border-radius: 0.375rem;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s;
+}
+
+.backBtn:hover {
+  background-color: #d1d5db;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.query {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* No Results (NOT an error) */
+.noResults {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.noResultsIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.noResults h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.noResults > p {
+  margin-bottom: 1.5rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.suggestions {
+  margin: 2rem auto;
+  text-align: left;
+  max-width: 24rem;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.suggestions h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestions li {
+  padding: 0.25rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.suggestions li:before {
+  content: "• ";
+  color: #2563eb;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.primaryBtn {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.15s;
+  margin-top: 1rem;
+}
+
+.primaryBtn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Results List */
+.resultsList {
+  max-width: 56rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resultCard {
+  display: block;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.resultCard:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.articleTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.metaItem {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.metaItem strong {
+  color: #374151;
+  margin-right: 0.25rem;
+  font-weight: 600;
+}
+
+.readMore {
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.resultCard:hover .readMore {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .articleTitle {
+    font-size: 1.125rem;
+  }
+
+  .resultCard {
+    padding: 1rem;
+  }
+}

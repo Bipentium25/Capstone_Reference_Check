@@ -1,0 +1,57 @@
+.sidebar {
+  width: 240px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Existing buttons already defined */
+.primaryBtn {
+  background-color: #42425a;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  text-align: center;
+}
+
+.primaryBtn:hover {
+  background-color: #3a5685;
+}
+
+/* Optional: add spacing if multiple buttons stacked */
+.sidebar > .primaryBtn:first-child {
+  margin-bottom: 12px;
+}
+
+/* Home button: light blue version */
+.homeBtn {
+  background-color:  #A3D9F5;; /* light blue */
+  color: #ffffff;            /* white text for contrast */
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: 1px solid #66A0C1; /* slightly darker border */
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  width: 100%;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px; /* match other buttons exactly */
+  text-decoration: none; /* ✅ remove underline */
+}
+
+.homeBtn:hover {
+  background-color: #5F9EC2; /* darker blue on hover */
+  border-color: #4F8BA8;
+}

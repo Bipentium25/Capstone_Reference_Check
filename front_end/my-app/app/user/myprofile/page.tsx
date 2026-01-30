@@ -1,3 +1,4 @@
+// app/user/myprofile/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -14,9 +15,7 @@ export default function MyProfilePage() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
-    const [emailStatus, setEmailStatus] = useState<
-        "idle" | "checking" | "available" | "taken"
-    >("idle")
+    const [emailStatus, setEmailStatus] = useState<"idle" | "checking" | "available" | "taken">("idle")
 
     const [formData, setFormData] = useState({
         name: user?.name || "",
@@ -72,10 +71,14 @@ export default function MyProfilePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        
+        // Check if password is provided
         if (!formData.password.trim()) {
         setError("Password is required to update your profile")
         return
         }
+        
+        // Check if email is taken
         if (emailStatus === "taken") {
         setError("This email is already in use")
         return
@@ -86,6 +89,24 @@ export default function MyProfilePage() {
         setSuccess(null)
 
         try {
+        // Step 1: Verify password by attempting login
+        const loginRes = await fetch(
+            "https://capstone-reference-check.onrender.com/client/login",
+            {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                email: user.email,  // Use current email to verify
+                password: formData.password 
+            }),
+            }
+        )
+
+        if (!loginRes.ok) {
+            throw new Error("Incorrect password. Please try again.")
+        }
+
+        // Step 2: If password is correct, proceed with update
         const payload = {
             name: formData.name || null,
             email: formData.email || null,
@@ -244,19 +265,27 @@ export default function MyProfilePage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password to confirm changes"
+                placeholder="Enter your current password to confirm"
                 required
                 />
+                <small style={{ display: 'block', marginTop: '4px', color: '#6b7280', fontSize: '0.875rem' }}>
+                Required to verify your identity
+                </small>
             </div>
 
             <div className={styles.actions}>
-                <button type="submit" className={styles.primaryBtn}>
+                <button 
+                type="submit" 
+                className={styles.primaryBtn}
+                disabled={isLoading}
+                >
                 {isLoading ? "Saving…" : "Save Changes"}
                 </button>
                 <button
                 type="button"
                 onClick={handleCancel}
                 className={styles.secondaryBtn}
+                disabled={isLoading}
                 >
                 Cancel
                 </button>

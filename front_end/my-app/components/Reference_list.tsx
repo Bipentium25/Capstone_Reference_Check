@@ -151,10 +151,10 @@ interface Reference {
                     <div className="font-mono font-semibold">{ref.cited_from_id}</div>
                     <div className="mt-1 flex flex-col gap-1">
                         {ref.if_key_reference && (
-                        <span className={`${styles.badge} ${styles.key}`}>🔑 Key</span>
+                        <span className={`${styles.badge} ${styles.key}`}>🔑</span>
                         )}
                         {ref.if_secondary_reference && (
-                        <span className={`${styles.badge} ${styles.secondary}`}>⚠️ Secondary</span>
+                        <span className={`${styles.badge} ${styles.secondary}`}>⚠️ </span>
                         )}
                     </div>
                     </td>
