@@ -47,7 +47,7 @@ export default function HomePage() {
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Enter subject (optional)"
+              placeholder="Enter subject "
               className="subject-input"
             />
             
