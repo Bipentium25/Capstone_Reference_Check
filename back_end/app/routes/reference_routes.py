@@ -4,6 +4,10 @@ from typing import Optional, List
 from app.models.reference import Reference
 from app.database import get_db
 from app.schema import ReferenceIn, ReferenceOut, ReferencePatch
+import resend
+import os
+
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 router = APIRouter(
     prefix="/references",
@@ -34,12 +38,32 @@ def serialize_reference(ref: Reference) -> ReferenceOut:
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     """
-    Create a new reference.
+    Create a new reference and send validation email.
     """
+    # Create the reference
     reference = Reference(**ref_in.dict())
     db.add(reference)
     db.commit()
     db.refresh(reference)
+    
+    # Send validation email
+    try:
+        params: resend.Emails.SendParams = {
+            "from": "onboarding@resend.dev",
+            "to": [ref_in.validator_email],  # Assuming you have this field
+            "subject": "Reference Validation Request",
+            "html": f"""
+                <h2>Reference Validation Request</h2>
+                <p>You have been invited to validate a reference.</p>
+                <p><strong>Article:</strong> {ref_in.article_title}</p>
+                <p><strong>Reference:</strong> {ref_in.reference_title}</p>
+                <p>Click here to validate: <a href="https://yourapp.com/validate/{reference.id}">Validate Reference</a></p>
+            """
+        }
+        resend.Emails.send(params)
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+    
     return serialize_reference(reference)
 
 @router.get("/{id}", response_model=ReferenceOut)
