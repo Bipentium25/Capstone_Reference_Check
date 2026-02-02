@@ -48,23 +48,15 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
-    print("=" * 50)
-    print("📧 REFERENCE CREATION STARTED")
-    print("=" * 50)
-    
-    # Fetch the articles
+    """
+    Create a new reference and send validation email.
+    """
+    # Fetch the articles to get their details
     citing_article = db.query(Article).filter(Article.id == ref_in.cited_from_id).first()
     referenced_article = db.query(Article).filter(Article.id == ref_in.cited_to_id).first()
     
-    print(f"Citing article ID: {ref_in.cited_from_id}")
-    print(f"Referenced article ID: {ref_in.cited_to_id}")
-    
     if not citing_article or not referenced_article:
-        print("❌ ERROR: Article not found!")
         raise HTTPException(status_code=404, detail="Article not found")
-    
-    print(f"✅ Citing article found: {citing_article.title}")
-    print(f"✅ Referenced article found: {referenced_article.title}")
     
     # Create the reference
     reference = Reference(**ref_in.dict())
@@ -72,39 +64,70 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(reference)
     
-    print(f"✅ Reference created with ID: {reference.id}")
-    
-    # Send validation email
-    print("=" * 50)
-    print("📧 ATTEMPTING TO SEND EMAIL")
-    print("=" * 50)
-    
+    # Send validation email to the referenced article's corresponding author
     try:
-        # Get email from the referenced article's corresponding author
         validator_email = referenced_article.corresponding_author.email
-        print(f"📧 Attempting to send email to: {validator_email}")
         
         params: resend.Emails.SendParams = {
             "from": "onboarding@resend.dev",
             "to": [validator_email],
             "subject": f"Reference Validation Request - {citing_article.title}",
             "html": f"""
-                <h1>Test Email</h1>
-                <p>Your work was cited!</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Reference Validation Request</h2>
+                    
+                    <p>Hello {referenced_article.corresponding_author.name},</p>
+                    
+                    <p>Your work has been cited and needs validation.</p>
+                    
+                    <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3 style="margin-top: 0;">Citation Details:</h3>
+                        
+                        <p><strong>Citing Article:</strong><br/>
+                        "{citing_article.title}"<br/>
+                        <em>by {citing_article.author_names}</em></p>
+                        
+                        <p><strong>Your Work Being Cited:</strong><br/>
+                        "{referenced_article.title}"<br/>
+                        <em>by {referenced_article.author_names}</em></p>
+                        
+                        {f'<p><strong>Citation Context:</strong><br/>{ref_in.citation_content}</p>' if ref_in.citation_content else ''}
+                        
+                        <p><strong>Reference Content:</strong><br/>
+                        {ref_in.content}</p>
+                        
+                        <p><strong>Key Reference:</strong> {'Yes' if ref_in.if_key_reference else 'No'}</p>
+                        <p><strong>Secondary Reference:</strong> {'Yes' if ref_in.if_secondary_reference else 'No'}</p>
+                    </div>
+                    
+                    <p>Please review whether this reference is:</p>
+                    <ul>
+                        <li>Relevant to the claim being made</li>
+                        <li>Accurately represents your work</li>
+                        <li>Properly contextualized</li>
+                    </ul>
+                    
+                    <div style="margin: 30px 0;">
+                        <a href="http://localhost:3000/articles/{citing_article.id}/reference/{reference.id}/feedback" 
+                            style="background-color: #4CAF50; color: white; padding: 12px 24px; 
+                                text-decoration: none; border-radius: 5px; display: inline-block;">
+                            Validate Reference
+                        </a>
+                    </div>
+                    
+                    <p style="color: #666; font-size: 12px;">
+                        This is an automated message from the REFEX Reference Validation System.
+                    </p>
+                </div>
             """
         }
         
-        email_response = resend.Emails.send(params)
-        print("✅ Email sent successfully:", email_response)
+        resend.Emails.send(params)
+        print(f"✅ Email sent to {validator_email}")
         
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
         traceback.print_exc()
-    
-    # These lines should be OUTSIDE the try/except block
-    print("=" * 50)
-    print("✅ REFERENCE CREATION COMPLETED")
-    print("=" * 50)
     
     return serialize_reference(reference)
 
