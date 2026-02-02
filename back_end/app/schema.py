@@ -64,13 +64,14 @@ class AuthorOut(BaseModel):
 class ReferenceIn(BaseModel):
     cited_to_id: int
     cited_from_id: int
+    content: str  # ← ADD THIS (required field)
     if_key_reference: bool
     if_secondary_reference: bool
     citation_content: Optional[str] = None
     ai_rated_score: Optional[int] = None
     feedback: Optional[str] = None
     author_comment: Optional[str] = None
-
+    
 class ReferenceOut(BaseModel):
     id: int
     cited_to_id: int
