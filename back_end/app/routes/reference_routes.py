@@ -100,10 +100,12 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
         traceback.print_exc()
-        print("=" * 50)
-        print("✅ REFERENCE CREATION COMPLETED")
-        print("=" * 50)
-        
+    
+    # These lines should be OUTSIDE the try/except block
+    print("=" * 50)
+    print("✅ REFERENCE CREATION COMPLETED")
+    print("=" * 50)
+    
     return serialize_reference(reference)
 
 @router.get("/{id}", response_model=ReferenceOut)
