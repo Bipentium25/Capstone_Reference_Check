@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.models.reference import Reference
+from app.models.article import Article
 from app.database import get_db
 from app.schema import ReferenceIn, ReferenceOut, ReferencePatch
 import resend
@@ -40,15 +41,6 @@ import os
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
-Great! I see POST /references/ HTTP/1.1" 200 OK - so the endpoint WAS called and succeeded!
-But you're not seeing any of the print statements I suggested (like "📧 Starting reference creation..."). This means either:
-
-You didn't add the print statements yet, or
-You added them but didn't redeploy to Render
-
-Here's what to do:
-Step 1: Add detailed logging to your create_reference endpoint:
-pythonimport resend
 import os
 import traceback
 
