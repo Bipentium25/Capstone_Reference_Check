@@ -104,42 +104,7 @@ interface Reference {
         
         fetchData()
     }, [refId])
-
-        useEffect(() => {
-    async function fetchData() {
-        try {
-        setIsLoading(true)
-        setError(null)
-        
-        console.log("Fetching reference ID:", refId)
-        console.log("Article ID:", articleId)
-        
-        // Fetch reference
-        const refResponse = await fetch(
-            `https://capstone-reference-check.onrender.com/references/${refId}`
-        )
-        
-        console.log("Reference response status:", refResponse.status)
-        
-        if (!refResponse.ok) {
-            throw new Error("Reference not found")
-        }
-        
-        const refData = await refResponse.json()
-        console.log("Reference data:", refData)
-        setReference(refData)
-        
-        // ... rest of fetch logic
-        } catch (err) {
-        console.error("Fetch error:", err)
-        setError(err instanceof Error ? err.message : "Failed to load reference")
-        } finally {
-        setIsLoading(false)
-        }
-    }
     
-    fetchData()
-    }, [refId])
     
     // Check if user is referenced author
     const isReferencedAuthor = user && citedToArticle && 
@@ -189,9 +154,8 @@ interface Reference {
         
         // Refresh page after 2 seconds
         setTimeout(() => {
-            window.location.reload()
+        router.push(`/articles/${articleId}`)
         }, 2000)
-        
         } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to submit feedback")
         } finally {
@@ -232,7 +196,7 @@ interface Reference {
         
         // Refresh page after 2 seconds
         setTimeout(() => {
-            window.location.reload()
+        router.push(`/articles/${articleId}`)
         }, 2000)
         
         } catch (err) {

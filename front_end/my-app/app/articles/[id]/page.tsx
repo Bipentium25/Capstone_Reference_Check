@@ -92,10 +92,6 @@ export default function ArticlePage() {
         id: article.author_ids[index]
     }))
 
-    console.log("Article corresponding_author_id:", article.corresponding_author_id)
-    console.log("Current user ID:", user?.id)
-    console.log("User object:", user)
-    
     return (
         <div className={styles.container}>
         <div className={styles.wrapper}>

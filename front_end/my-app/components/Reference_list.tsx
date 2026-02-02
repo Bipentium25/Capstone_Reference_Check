@@ -37,12 +37,6 @@ interface ReferenceListProps {
 
     const isArticleAuthor = user && user.id === correspondingAuthorId
     
-    console.log("=== ReferenceList Debug ===")
-    console.log("User ID:", user?.id)
-    console.log("Corresponding Author ID:", correspondingAuthorId)
-    console.log("Types:", typeof user?.id, typeof correspondingAuthorId)
-    console.log("isArticleAuthor:", isArticleAuthor)
-    
 
     /* ---------------- Fetch references ---------------- */
     useEffect(() => {
