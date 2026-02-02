@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import styles from "./article.module.css"  // ← Import the CSS Module
 import ReferenceList from "@/components/Reference_list"
+import { useUserStore } from "@/app/store/userStore"
 
 
 
@@ -23,10 +24,12 @@ export default function ArticlePage() {
     const params = useParams()
     const router = useRouter()
     const articleId = params.id as string
+
     
     const [article, setArticle] = useState<Article | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const { user } = useUserStore() 
     
     useEffect(() => {
         async function fetchArticle() {
@@ -88,6 +91,10 @@ export default function ArticlePage() {
         name: name,
         id: article.author_ids[index]
     }))
+
+    console.log("Article corresponding_author_id:", article.corresponding_author_id)
+    console.log("Current user ID:", user?.id)
+    console.log("User object:", user)
     
     return (
         <div className={styles.container}>
@@ -150,7 +157,10 @@ export default function ArticlePage() {
             </article>
                     {/* ← ADD REFERENCE LIST HERE */}
             <div className="mt-8">
-            <ReferenceList articleId={article.id} />
+            <ReferenceList 
+            articleId={article.id} 
+            correspondingAuthorId={article.corresponding_author_id}  // ← ADD THIS
+            />
             </div>
             
             

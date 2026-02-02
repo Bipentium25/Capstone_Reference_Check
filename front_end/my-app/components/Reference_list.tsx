@@ -3,32 +3,46 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useUserStore } from "@/app/store/userStore"
 import styles from "./ReferenceList.module.css"
 
 interface Reference {
-    id: number
-    cited_to_id: number
-    cited_from_id: number
-    cited_to_title: string
-    cited_from_title: string
-    if_key_reference: boolean
-    if_secondary_reference: boolean
-    citation_content: string
-    ai_rated_score: number
-    feedback: string
-    author_comment: string
-    }
+  id: number
+  cited_to_id: number
+  cited_from_id: number
+  cited_to_title: string
+  cited_from_title: string
+  if_key_reference: boolean
+  if_secondary_reference: boolean
+  citation_content: string
+  ai_rated_score: number
+  feedback: string
+  author_comment: string
+}
 
-    interface ReferenceListProps {
+interface ReferenceListProps {
     articleId: number
+    correspondingAuthorId: number  // ← NEW: Pass from article page
     }
 
-    export default function ReferenceList({ articleId }: ReferenceListProps) {
+    export default function ReferenceList({ articleId, correspondingAuthorId }: ReferenceListProps) {
+    const { user } = useUserStore()  // ← NEW: Get current user
     const [references, setReferences] = useState<Reference[]>([])
     const [filteredReferences, setFilteredReferences] = useState<Reference[]>([])
     const [showOnlyKey, setShowOnlyKey] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
+    // ← NEW: Check if current user is the article author
+
+    const isArticleAuthor = user && user.id === correspondingAuthorId
+    
+    console.log("=== ReferenceList Debug ===")
+    console.log("User ID:", user?.id)
+    console.log("Corresponding Author ID:", correspondingAuthorId)
+    console.log("Types:", typeof user?.id, typeof correspondingAuthorId)
+    console.log("isArticleAuthor:", isArticleAuthor)
+    
 
     /* ---------------- Fetch references ---------------- */
     useEffect(() => {
@@ -115,32 +129,32 @@ interface Reference {
             </p>
             </div>
 
-        <label className="flex cursor-pointer items-center gap-2">
-        <input
-            type="checkbox"
-            checked={showOnlyKey}
-            onChange={(e) => setShowOnlyKey(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600"
-        />
-        <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 'normal' }}>
-            Show only key references
-        </span>
-        </label>
-
+            <label className="flex cursor-pointer items-center gap-2">
+            <input
+                type="checkbox"
+                checked={showOnlyKey}
+                onChange={(e) => setShowOnlyKey(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-blue-600"
+            />
+            <span style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 'normal' }}>
+                Show only key references
+            </span>
+            </label>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
             <table className={styles.table}>
             <thead>
-                <tr>
+            <tr>
                 <th className={styles.th}>Ref ID</th>
                 <th className={styles.th}>Article</th>
                 <th className={styles.th}>Citation Context</th>
                 <th className={styles.th}>AI Score</th>
                 <th className={styles.th}>Citation Feedback</th>
                 <th className={styles.th}>Author Comment</th>
-                </tr>
+                {isArticleAuthor && <th className={styles.th}>Actions</th>}
+            </tr>
             </thead>
 
             <tbody>
@@ -151,10 +165,10 @@ interface Reference {
                     <div className="font-mono font-semibold">{ref.cited_to_id}</div>
                     <div className="mt-1 flex flex-col gap-1">
                         {ref.if_key_reference && (
-                        <span className={`${styles.badge} ${styles.key}`}>🔑</span>
+                        <span className={`${styles.badge} ${styles.key}`}>🔑 Key</span>
                         )}
                         {ref.if_secondary_reference && (
-                        <span className={`${styles.badge} ${styles.secondary}`}>⚠️ </span>
+                        <span className={`${styles.badge} ${styles.secondary}`}>⚠️ Secondary</span>
                         )}
                     </div>
                     </td>
@@ -176,12 +190,16 @@ interface Reference {
 
                     {/* AI Score */}
                     <td className={styles.td}>
-                    <span className={`${styles.score} ${scoreClass(ref.ai_rated_score)}`}>
+                    {ref.ai_rated_score !== null ? (
+                        <span className={`${styles.score} ${scoreClass(ref.ai_rated_score)}`}>
                         {ref.ai_rated_score}/10
-                    </span>
+                        </span>
+                    ) : (
+                        <span className="text-gray-400 text-sm">Not rated</span>
+                    )}
                     </td>
 
-                    {/* Author Feedback */}
+                    {/* Citation Feedback */}
                     <td className={`${styles.td} ${styles.muted}`}>
                     {ref.feedback || "No feedback"}
                     </td>
@@ -190,6 +208,18 @@ interface Reference {
                     <td className={`${styles.td} ${styles.muted}`}>
                     {ref.author_comment || "No comment"}
                     </td>
+
+                    {/* ← NEW: Actions Column (only for article author) */}
+                    {isArticleAuthor && (
+                    <td className={styles.td}>
+                        <Link
+                        href={`/articles/${articleId}/reference/${ref.id}/feedback`}
+                        className={styles.actionLink}
+                        >
+                        {ref.author_comment ? "✓ View" : "💬 Comment"}
+                        </Link>
+                    </td>
+                    )}
                 </tr>
                 ))}
             </tbody>
