@@ -1,7 +1,7 @@
 // app/articles/search_result/page.tsx
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import styles from "./SearchResult.module.css"
@@ -19,7 +19,7 @@ interface Article {
     author_ids: number[]
     }
 
-    export default function SearchResultPage() {
+    function SearchResultContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     
@@ -59,28 +59,22 @@ interface Article {
             
             const response = await fetch(url)
             
-            // Check for different error types
             if (!response.ok) {
             if (response.status === 404) {
-                // 404 means no results found, not an error
                 setResults([])
                 setIsLoading(false)
                 return
             } else if (response.status >= 500) {
-                // Server error
                 throw new Error("Server error. Please try again later.")
             } else if (response.status === 400) {
-                // Bad request
                 throw new Error("Invalid search query. Please check your input.")
             } else {
-                // Other errors
                 throw new Error("Search failed. Please try again.")
             }
             }
             
             const data = await response.json()
             
-            // Handle empty results
             if (Array.isArray(data)) {
             setResults(data)
             } else if (data && typeof data === 'object') {
@@ -91,7 +85,6 @@ interface Article {
             
         } catch (err) {
             console.error("Search error:", err)
-            // Only set error for actual failures, not empty results
             setError(err instanceof Error ? err.message : "Failed to search. Please try again.")
         } finally {
             setIsLoading(false)
@@ -120,7 +113,6 @@ interface Article {
         )
     }
     
-    // Show error only for actual errors (network, server, etc.)
     if (error) {
         return (
         <div className={styles.container}>
@@ -156,7 +148,6 @@ interface Article {
             </p>
         </div>
         
-        {/* No results (not an error, just empty) */}
         {results.length === 0 ? (
             <div className={styles.noResults}>
             <div className={styles.noResultsIcon}>🔍</div>
@@ -218,5 +209,20 @@ interface Article {
             </div>
         )}
         </div>
+    )
+    }
+
+    export default function SearchResultPage() {
+    return (
+        <Suspense fallback={
+        <div className={styles.container}>
+            <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Loading search...</p>
+            </div>
+        </div>
+        }>
+        <SearchResultContent />
+        </Suspense>
     )
     }

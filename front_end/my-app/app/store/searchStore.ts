@@ -1,11 +1,10 @@
-// app/store/searchStore.ts
 "use client"
 
 import { create } from 'zustand'
 
 export type SearchType = "author" | "title" | "article_id"
 
-    interface Single_Article {
+interface Article {  // ← Changed from Single_Article
     id: number
     title: string
     content: string
@@ -16,7 +15,7 @@ export type SearchType = "author" | "title" | "article_id"
     author_ids: number[]
     }
 
-    interface List_of_Artilces {
+    interface SearchStore {  // ← Changed from List_of_Artilces
     searchType: SearchType
     query: string
     results: Article[]
@@ -44,7 +43,6 @@ export type SearchType = "author" | "title" | "article_id"
         set({ isLoading: true, error: null })
         
         try {
-        // Different API routes based on search type
         let url = ""
         
         if (type === "author") {
@@ -62,9 +60,6 @@ export type SearchType = "author" | "title" | "article_id"
         }
         
         const data = await response.json()
-        
-        // If searching by ID, wrap single article in array
-        // If searching by author/title, assume it returns an array
         const results = type === 'article_id' ? [data] : data
         
         set({ results, isLoading: false })
