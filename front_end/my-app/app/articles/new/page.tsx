@@ -13,7 +13,7 @@ interface Author {
 
     export default function NewArticlePage() {
     const router = useRouter()
-    const user = useUserStore((state) => state.user)
+    const { user, setUser, refreshUser } = useUserStore()  // ← Fixed: Only one declaration
     
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -147,11 +147,15 @@ interface Author {
         const newArticle = await response.json()
         console.log("Article created:", newArticle)
         
+        // ✨ Refresh user data to include new article
+        await refreshUser()
+        console.log("User data refreshed with new article")
+        
         setSuccess("Article submitted successfully!")
         
-        // Redirect to the new article after 2 seconds
+        // Redirect to submit references after 2 seconds
         setTimeout(() => {
-            router.push(`/articles/${newArticle.id}`)
+            router.push(`/articles/${newArticle.id}/submit_references`)
         }, 2000)
         
         } catch (err) {
@@ -177,7 +181,7 @@ interface Author {
         {success && (
             <div className={styles.success}>
             <p>{success}</p>
-            <p className={styles.redirectMsg}>Redirecting to your article...</p>
+            <p className={styles.redirectMsg}>Redirecting to submit references...</p>
             </div>
         )}
         
