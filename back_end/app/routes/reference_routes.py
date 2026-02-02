@@ -35,34 +35,97 @@ def serialize_reference(ref: Reference) -> ReferenceOut:
     )
 
 # -------------------- Routes --------------------
+import resend
+import os
+
+resend.api_key = os.getenv("RESEND_API_KEY")
+
+Great! I see POST /references/ HTTP/1.1" 200 OK - so the endpoint WAS called and succeeded!
+But you're not seeing any of the print statements I suggested (like "📧 Starting reference creation..."). This means either:
+
+You didn't add the print statements yet, or
+You added them but didn't redeploy to Render
+
+Here's what to do:
+Step 1: Add detailed logging to your create_reference endpoint:
+pythonimport resend
+import os
+import traceback
+
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
-    """
-    Create a new reference and send validation email.
-    """
+    print("=" * 50)
+    print("📧 REFERENCE CREATION STARTED")
+    print("=" * 50)
+    
+    # Fetch the articles
+    citing_article = db.query(Article).filter(Article.id == ref_in.cited_from_id).first()
+    referenced_article = db.query(Article).filter(Article.id == ref_in.cited_to_id).first()
+    
+    print(f"Citing article ID: {ref_in.cited_from_id}")
+    print(f"Referenced article ID: {ref_in.cited_to_id}")
+    
+    if not citing_article or not referenced_article:
+        print("❌ ERROR: Article not found!")
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    print(f"✅ Citing article found: {citing_article.title}")
+    print(f"✅ Referenced article found: {referenced_article.title}")
+    
     # Create the reference
     reference = Reference(**ref_in.dict())
     db.add(reference)
     db.commit()
     db.refresh(reference)
     
+    print(f"✅ Reference created with ID: {reference.id}")
+    
     # Send validation email
+    print("=" * 50)
+    print("📧 ATTEMPTING TO SEND EMAIL")
+    print("=" * 50)
+    
     try:
+        # Check if Author has email
+        if not hasattr(referenced_article.corresponding_author, 'email'):
+            print("❌ ERROR: Author model doesn't have email field!")
+            raise Exception("Author email field missing")
+            
+        validator_email = referenced_article.corresponding_author.email
+        print(f"Validator email: {validator_email}")
+        
+        # Check API key
+        api_key = os.getenv("RESEND_API_KEY")
+        if not api_key:
+            print("❌ ERROR: RESEND_API_KEY not set!")
+            raise Exception("RESEND_API_KEY missing")
+        
+        print(f"API key present: {api_key[:10]}...")
+        
         params: resend.Emails.SendParams = {
             "from": "onboarding@resend.dev",
-            "to": [ref_in.validator_email],  # Assuming you have this field
-            "subject": "Reference Validation Request",
-            "html": f"""
-                <h2>Reference Validation Request</h2>
-                <p>You have been invited to validate a reference.</p>
-                <p><strong>Article:</strong> {ref_in.article_title}</p>
-                <p><strong>Reference:</strong> {ref_in.reference_title}</p>
-                <p>Click here to validate: <a href="https://yourapp.com/validate/{reference.id}">Validate Reference</a></p>
-            """
+            "to": [validator_email],
+            "subject": f"Reference Validation Request - {citing_article.title}",
+            "html": "<h1>Test Email - Reference Validation</h1><p>This is a test.</p>"
         }
-        resend.Emails.send(params)
+        
+        print("Calling Resend API...")
+        email_response = resend.Emails.send(params)
+        print(f"✅ EMAIL SENT SUCCESSFULLY!")
+        print(f"Response: {email_response}")
+        
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print("=" * 50)
+        print("❌ EMAIL SENDING FAILED")
+        print("=" * 50)
+        print(f"Error: {str(e)}")
+        traceback.print_exc()
+    
+    print("=" * 50)
+    print("✅ REFERENCE CREATION COMPLETED")
+    print("=" * 50)
     
     return serialize_reference(reference)
 
