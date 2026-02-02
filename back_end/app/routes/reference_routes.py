@@ -88,45 +88,30 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     print("=" * 50)
     
     try:
-        # Check if Author has email
-        if not hasattr(referenced_article.corresponding_author, 'email'):
-            print("❌ ERROR: Author model doesn't have email field!")
-            raise Exception("Author email field missing")
-            
+        # Get email from the referenced article's corresponding author
         validator_email = referenced_article.corresponding_author.email
-        print(f"Validator email: {validator_email}")
-        
-        # Check API key
-        api_key = os.getenv("RESEND_API_KEY")
-        if not api_key:
-            print("❌ ERROR: RESEND_API_KEY not set!")
-            raise Exception("RESEND_API_KEY missing")
-        
-        print(f"API key present: {api_key[:10]}...")
+        print(f"📧 Attempting to send email to: {validator_email}")
         
         params: resend.Emails.SendParams = {
             "from": "onboarding@resend.dev",
             "to": [validator_email],
             "subject": f"Reference Validation Request - {citing_article.title}",
-            "html": "<h1>Test Email - Reference Validation</h1><p>This is a test.</p>"
+            "html": f"""
+                <h1>Test Email</h1>
+                <p>Your work was cited!</p>
+            """
         }
         
-        print("Calling Resend API...")
         email_response = resend.Emails.send(params)
-        print(f"✅ EMAIL SENT SUCCESSFULLY!")
-        print(f"Response: {email_response}")
+        print("✅ Email sent successfully:", email_response)
         
     except Exception as e:
-        print("=" * 50)
-        print("❌ EMAIL SENDING FAILED")
-        print("=" * 50)
-        print(f"Error: {str(e)}")
+        print(f"❌ Failed to send email: {e}")
         traceback.print_exc()
-    
-    print("=" * 50)
-    print("✅ REFERENCE CREATION COMPLETED")
-    print("=" * 50)
-    
+        print("=" * 50)
+        print("✅ REFERENCE CREATION COMPLETED")
+        print("=" * 50)
+        
     return serialize_reference(reference)
 
 @router.get("/{id}", response_model=ReferenceOut)
