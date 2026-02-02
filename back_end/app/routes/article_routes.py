@@ -77,6 +77,28 @@ def search_articles(
 
     return [serialize_article(a) for a in articles]
 
+# -------------------- lucky --------------------
+@router.get("/lucky")
+def get_lucky_article(subject: Optional[str] = None, db: Session = Depends(get_db)):
+
+    import random
+    
+    query = db.query(Article.id)
+    
+    if subject:
+        query = query.filter(Article.subject.ilike(f"%{subject}%"))
+    
+    count = query.count()
+    
+    if count == 0:
+        raise HTTPException(status_code=404, detail="No articles found for this subject")
+    
+    # Get random article ID
+    random_offset = random.randint(0, count - 1)
+    article_id = query.offset(random_offset).first()[0]
+    
+    return {"id": article_id}
+
 # -------------------- Routes --------------------
 @router.get("/authors/{author_id}/articles", response_model=List[ArticleOut])
 def get_articles_by_author(author_id: int, db: Session = Depends(get_db)):
