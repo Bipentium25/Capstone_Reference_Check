@@ -7,6 +7,8 @@ from app.database import get_db
 from app.schema import ReferenceIn, ReferenceOut, ReferencePatch
 import resend
 import os
+from app.ai_score import get_ai_reference_score
+
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
@@ -46,10 +48,12 @@ import traceback
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
+from app.services.ai_scoring import get_ai_reference_score
+
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     """
-    Create a new reference and send validation email.
+    Create a new reference, get AI score, and send validation email.
     """
     # Fetch the articles to get their details
     citing_article = db.query(Article).filter(Article.id == ref_in.cited_from_id).first()
@@ -64,9 +68,30 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(reference)
     
+    # Get AI score
+    try:
+        print("🤖 Getting AI score...")
+        ai_score = get_ai_reference_score(citing_article, referenced_article, reference)
+        if ai_score is not None:
+            reference.ai_rated_score = ai_score
+            db.commit()
+            db.refresh(reference)
+            print(f"✅ AI score saved: {ai_score}/10")
+        else:
+            print("⚠️ AI score returned None")
+    except Exception as e:
+        print(f"❌ Failed to get AI score: {e}")
+        traceback.print_exc()
+        # Continue without score - don't fail the request
+    
     # Send validation email to the referenced article's corresponding author
     try:
         validator_email = referenced_article.corresponding_author.email
+        
+        # Include AI score in email if available
+        ai_score_html = f"""
+            <p><strong>AI Quality Score:</strong> {reference.ai_rated_score}/10</p>
+        """ if reference.ai_rated_score is not None else ""
         
         params: resend.Emails.SendParams = {
             "from": "onboarding@resend.dev",
@@ -95,6 +120,8 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
                         
                         <p><strong>Reference Content:</strong><br/>
                         {ref_in.content}</p>
+                        
+                        {ai_score_html}
                         
                         <p><strong>Key Reference:</strong> {'Yes' if ref_in.if_key_reference else 'No'}</p>
                         <p><strong>Secondary Reference:</strong> {'Yes' if ref_in.if_secondary_reference else 'No'}</p>
