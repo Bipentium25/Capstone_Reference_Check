@@ -75,6 +75,7 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
             print("⚠️ AI score returned None")
     except Exception as e:
         print(f"❌ Failed to get AI score: {e}")
+
         # Continue without score - don't fail the request
     
     # Send validation email to the referenced article's corresponding author
