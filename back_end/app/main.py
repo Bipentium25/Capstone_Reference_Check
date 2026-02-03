@@ -20,7 +20,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://capstone-reference-check.onrender.com",
-        "https://capstone-reference-check-z9yc-git-main-mengqiaos-projects.vercel.app"
+        "https://capstone-reference-check-z9yc-git-main-mengqiaos-projects.vercel.app",
+        "https://capstone-reference-check-67ra.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
