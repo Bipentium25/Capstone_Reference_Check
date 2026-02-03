@@ -11,6 +11,7 @@ from app.ai_score import get_ai_reference_score
 
 
 resend.api_key = os.getenv("RESEND_API_KEY")
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
 router = APIRouter(
     prefix="/references",
@@ -38,6 +39,11 @@ def serialize_reference(ref: Reference) -> ReferenceOut:
     )
 
 # -------------------- Routes --------------------
+import os
+
+# At the top of your file with other imports
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     """
@@ -69,12 +75,16 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
             print("⚠️ AI score returned None")
     except Exception as e:
         print(f"❌ Failed to get AI score: {e}")
-        traceback.print_exc()
         # Continue without score - don't fail the request
     
     # Send validation email to the referenced article's corresponding author
     try:
         validator_email = referenced_article.corresponding_author.email
+        
+        # Only send email if it's the admin email (testing mode)
+        if validator_email != ADMIN_EMAIL:
+            print(f"⚠️ Skipping email to {validator_email} (not admin email, testing mode)")
+            return serialize_reference(reference)
         
         # Include AI score in email if available
         ai_score_html = f"""
@@ -123,7 +133,7 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
                     </ul>
                     
                     <div style="margin: 30px 0;">
-                        <a href="http://localhost:3000/articles/{citing_article.id}/reference/{reference.id}/feedback" 
+                        <a href="https://capstone-reference-check-67ra.vercel.app/articles/{citing_article.id}/reference/{reference.id}/feedback" 
                             style="background-color: #4CAF50; color: white; padding: 12px 24px; 
                                 text-decoration: none; border-radius: 5px; display: inline-block;">
                             Validate Reference
@@ -142,8 +152,6 @@ def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
         
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
-        traceback.print_exc()
-    
     return serialize_reference(reference)
 
 @router.get("/{id}", response_model=ReferenceOut)

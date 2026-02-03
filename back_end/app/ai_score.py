@@ -52,10 +52,9 @@ def get_ai_reference_score(citing_article, cited_article, reference):
 
     try:
             response = client.models.generate_content(
-                model="gemini-2.0-flash-exp",
-                contents=prompt
+            model="gemini-1.5-flash",  # Changed from gemini-2.0-flash-exp
+            contents=prompt
             )
-            
             # Parse JSON response
             result_text = response.text.strip()
             
