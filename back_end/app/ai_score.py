@@ -8,17 +8,7 @@ def get_ai_reference_score(citing_article, cited_article, reference):
     Returns just the score (integer)
     """
     
-    # Initialize client
-    try:
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            print("GEMINI_API_KEY not found")
-            return None
-            
-        client = genai.Client(api_key=api_key)
-    except Exception as e:
-        print(f"Failed to initialize Gemini client: {e}")
-        return None
+    client = genai.Client()
     
     prompt = f"""You are an expert academic reviewer evaluating citation quality.
 
@@ -52,7 +42,7 @@ def get_ai_reference_score(citing_article, cited_article, reference):
 
     try:
             response = client.models.generate_content(
-            model="gemini-1.5-flash",  # Changed from gemini-2.0-flash-exp
+            model="gemini-3-flash-preview",
             contents=prompt
             )
             # Parse JSON response
