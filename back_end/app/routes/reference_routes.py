@@ -38,18 +38,6 @@ def serialize_reference(ref: Reference) -> ReferenceOut:
     )
 
 # -------------------- Routes --------------------
-import resend
-import os
-
-resend.api_key = os.getenv("RESEND_API_KEY")
-
-import os
-import traceback
-
-resend.api_key = os.getenv("RESEND_API_KEY")
-
-from app.services.ai_scoring import get_ai_reference_score
-
 @router.post("/", response_model=ReferenceOut)
 def create_reference(ref_in: ReferenceIn, db: Session = Depends(get_db)):
     """
