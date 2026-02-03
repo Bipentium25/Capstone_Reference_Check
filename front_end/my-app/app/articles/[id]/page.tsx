@@ -165,6 +165,14 @@ export default function ArticlePage() {
                 Back to Search
             </button>
             </div>
+            <div className={styles.graphButton}>
+            <button 
+                onClick={() => router.push(`/articles/${articleId}/graph`)} 
+                className={styles.graphButtonInner}
+            >
+                📊 View Citation Graph
+            </button>
+            </div>
             
         </div>
         </div>
