@@ -265,29 +265,46 @@ def seed():
         },
     ]
 
+    # Create articles
     articles = [Article(**data) for data in articles_data]
     db.add_all(articles)
     db.commit()
     for art in articles:
         db.refresh(art)
 
-    # ======================================================
-    # AuthorArticle links (many-to-many, cyclic & dense)
-    # ======================================================
-    author_cycle = cycle(authors)
+    # Parse author_names and create AuthorArticle links for ALL authors
+    for art in articles:
+        # Split the author_names string
+        author_name_list = [name.strip() for name in art.author_names.split(',')]
+        
+        for author_name in author_name_list:
+            # Find author by name
+            author = db.query(Author).filter(Author.name == author_name).first()
+            if author:
+                db.add(AuthorArticle(
+                    article_id=art.id,
+                    author_id=author.id
+                ))
 
+    db.commit()
+
+    # Then add extra cyclic links if you want more co-authors
+    author_cycle = cycle(authors)
     links = []
     for art in articles:
-        # each article has 2–3 authors
         for _ in range(3):
             author = next(author_cycle)
-            links.append(
-                AuthorArticle(article_id=art.id, author_id=author.id)
-            )
+            # Check if link already exists
+            existing = db.query(AuthorArticle).filter(
+                AuthorArticle.article_id == art.id,
+                AuthorArticle.author_id == author.id
+            ).first()
+            if not existing:
+                links.append(AuthorArticle(article_id=art.id, author_id=author.id))
 
     db.add_all(links)
     db.commit()
-
+    
     # ======================================================
     # References
     # Each article cites 3 others (ring + cross-links)
