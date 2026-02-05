@@ -47,19 +47,7 @@ def get_author(id: int, db: Session = Depends(get_db)):
     author = db.get(Author, id)
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")
-    
-    # Explicitly build articles list
-    articles = [{"id": a.id, "title": a.title} for a in author.articles]
-    
-    # Return explicit AuthorOut object
-    return AuthorOut(
-        id=author.id,
-        name=author.name,
-        email=author.email,
-        institute=author.institute,
-        job=author.job,
-        articles=articles  # ← Explicitly pass the articles
-    )
+    return author
 
 @router.post("/by-email", response_model=AuthorOut)
 def get_author_by_email(author_email: AuthorEmailIn, db: Session = Depends(get_db)):
