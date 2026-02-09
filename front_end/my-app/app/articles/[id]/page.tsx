@@ -92,6 +92,13 @@ export default function ArticlePage() {
         id: article.author_ids[index]
     }))
 
+    const correspondingAuthor = authors.find(
+    author => author.id === article.corresponding_author_id
+    )
+
+    const isCorrespondingAuthor = user?.id === article.corresponding_author_id
+
+
     return (
         <div className={styles.container}>
         <div className={styles.wrapper}>
@@ -119,7 +126,29 @@ export default function ArticlePage() {
                     ))}
                     </span>
                 </div>
-                
+                <div className={styles.metadataRow}>
+                <span className={styles.metadataLabel}>Corresponding Author:</span>
+                <span className={styles.metadataValue}>
+                    {correspondingAuthor ? (
+                    <>
+                        <Link 
+                        href={`/user/${correspondingAuthor.id}`} 
+                        className={styles.authorLink}
+                        >
+                        {correspondingAuthor.name}
+                        </Link>
+                        {isCorrespondingAuthor && (
+                        <span style={{ color: '#10b981', fontWeight: 600, marginLeft: '0.5rem' }}>
+                            (You)
+                        </span>
+                        )}
+                    </>
+                    ) : (
+                    'Not specified'
+                    )}
+                </span>
+                </div>
+
                 <div className={styles.metadataRow}>
                     <span className={styles.metadataLabel}>Published in:</span>
                     <span className={styles.metadataValue}>{article.published_journal}</span>
