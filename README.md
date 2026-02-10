@@ -47,6 +47,7 @@ Reference Check provides a comprehensive platform for academic reference verific
 - **Routing**: Next.js App Router
 - **Visualization**: Cytoscape.js (citation graphs)
 - **Styling**: CSS Modules
+- **Deployment**: Vercel
 
 ### Backend
 - **Framework**: FastAPI (Python)
@@ -56,6 +57,7 @@ Reference Check provides a comprehensive platform for academic reference verific
 - **Validation**: Pydantic (included with FastAPI)
 - **AI Integration**: Google Gemini API (reference quality scoring)
 - **Email Service**: Resend API (citation notifications)
+- **Deployment**: Render.com
 
 ## 📦 Installation
 
@@ -106,6 +108,9 @@ pip install -r requirements.txt
 # Run FastAPI server
 uvicorn main:app --reload
 ```
+### Frontend and Backend Deployment 
+
+The Frontend Webpage  will be available at `https://capstone-reference-check-67ra.vercel.app/`
 
 The backend API will be available at `https://capstone-reference-check.onrender.com/`
 
