@@ -130,7 +130,6 @@ CAPSTONE_REFERENCE_CHECK/
 │   │   │   ├── new/                  # Article submission form
 │   │   │   └── search_result/        # Search results page
 │   │   ├── store/
-│   │   │   ├── searchStore.ts        # Search state management
 │   │   │   └── userStore.ts          # User auth & global state
 │   │   ├── user/
 │   │   │   ├── [id]/                 # User profile pages (any user)
