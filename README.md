@@ -51,10 +51,12 @@ Reference Check provides a comprehensive platform for academic reference verific
 
 ### Backend
 - **Framework**: FastAPI (Python)
+- **CORS**: FastAPI CORS Middleware
 - **Database**: PostgreSQL
 - **ORM**: SQLAlchemy
 - **Migrations**: Alembic
-- **Validation**: Pydantic (included with FastAPI)
+- **Data Validation**: Pydantic (included with FastAPI)
+- **Password Validation **: Passlib (bcrypt password hashing)
 - **AI Integration**: Google Gemini API (reference quality scoring)
 - **Email Service**: Resend API (citation notifications)
 - **Deployment**: Render.com
