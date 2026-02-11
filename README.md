@@ -46,7 +46,8 @@ Reference Check provides a comprehensive platform for academic reference verific
 - **State Management**: Zustand (with persistence middleware)
 - **Routing**: Next.js App Router
 - **Visualization**: Cytoscape.js (citation graphs)
-- **Styling**: CSS Modules
+- **Styling**: CSS Modules + Tailwind Modules
+- **HTTP Client**: Fetch API (native)
 - **Deployment**: Vercel
 
 ### Backend
